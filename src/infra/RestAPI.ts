@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import fs from 'fs';
 import YAML from 'yaml';
@@ -7,8 +9,8 @@ import { OpenAPIV3 } from 'openapi-types';
 import { _DOCS_PREFIX_, _API_PREFIX_ } from './config/constants';
 
 import { IHTTPServer } from '@src/infra/server/HTTP/ports/IHTTPServer'; 
-import { ExpressServer } from "@src/infra/server/HTTP/adapters/express/ExpressServer";
-import localhostGetHandlerFactory from "@src/infra/server/HTTP/adapters/express/handlers/localhost.get";
+import { ExpressServer } from '@src/infra/server/HTTP/adapters/express/ExpressServer';
+import localhostGetHandlerFactory from '@src/infra/server/HTTP/adapters/express/handlers/localhost.get';
 import apiVersionsGetHandlerFactory from '@src/infra/server/HTTP/adapters/express/handlers/apiversions.get';
 
 import { IDbClient } from '@src/infra/persistence/port/IDbClient';
@@ -69,7 +71,7 @@ export class RestAPI {
         // console.time('Load spec files');
         const specs = fs.readdirSync('./src/infra/spec');
         for(const version of specs) {
-            const file = fs.readFileSync(`./src/infra/spec/${version}`, 'utf8')
+            const file = fs.readFileSync(`./src/infra/spec/${version}`, 'utf8');
             const jsonOAS: OpenAPIV3.Document = YAML.parse(file);
             this.#_oas.set(jsonOAS.info.version, jsonOAS);
         }
@@ -109,7 +111,7 @@ export class RestAPI {
     }
 
     #_buildDocEndPoints() {
-        const routerDocs = express.Router()
+        const routerDocs = express.Router();
         for(const [version, spec] of this.#_oas) {
             routerDocs.get(`/${version}`, function(req, res){
                 res.json(spec);
@@ -147,20 +149,22 @@ export class RestAPI {
         const repo = AccountDataRepository.compile({ dbClient: this.#_dbClient });
         const service = AccountService.create({
             repos: {
-                'AccountDataRepository': repo,
+                'AccountDataRepository': repo
             }
         });
         const requests = [];
         for(const account of accounts) {
-            requests.push(new Promise(async (resolve, reject) => {
-                const { userEmail, balance } = account;
-                try {
-                    const document = await service.create({ userEmail, balance });
-                } catch (error: any) {
-                    // console.log(error.message)
-                }
-                resolve(true);
-            }))
+            requests.push(new Promise((resolve) => {
+                (async ()=> {
+                    const { userEmail, balance } = account;
+                    try {
+                        await service.create({ userEmail, balance });
+                    } catch (error: any) {
+                        // console.log(error.message)
+                    }
+                    resolve(true);
+                })();
+            }));
         }
         await Promise.all(requests);
     }
@@ -171,35 +175,37 @@ export class RestAPI {
         
         const accountService = AccountService.create({
             repos: {
-                'AccountDataRepository': accountRepo,
+                'AccountDataRepository': accountRepo
             }
         });
         const transactionService = TransactionService.create({
             repos: {
-                'TransactionDataRepository': transactionRepo,
+                'TransactionDataRepository': transactionRepo
             },
             services: {
-                'AccountService': accountService,
+                'AccountService': accountService
             },
             mutexClient: this.#_mutexClient as IMutexClient
         });
         
         const requests = [];
         for(const transaction of transactions) {
-            requests.push(new Promise(async (resolve, reject) => {
-                const { userEmail, amount, type } = transaction;
-                try {
-                    const document = await transactionService.create({
-                        userEmail,
-                        amount,
-                        type,
-                    });
-                } catch (error: any) {
-                    // console.log(error.message)
-                }
-                
-                resolve(true);
-            }))
+            requests.push(new Promise((resolve) => {
+                (async () => {
+                    const { userEmail, amount, type } = transaction;
+                    try {
+                        await transactionService.create({
+                            userEmail,
+                            amount,
+                            type
+                        });
+                    } catch (error: any) {
+                        // console.log(error.message)
+                    }
+                    
+                    resolve(true);
+                })();
+            }));
         }
         await Promise.all(requests);
     }
