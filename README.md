@@ -135,6 +135,12 @@ It doesn't knows external domain use cases.
     npm install
 ```
 
+2. Run Redis (if you don't have already)
+
+```bash
+    npm run docker:composeredis
+```
+
 ### Run the entire test suite
 
 ```bash
