@@ -8,7 +8,7 @@
     "dev": "ts-node ./src/index.ts",
     "tdd": "jest --watchAll --verbose --detectOpenHandles",
     "prepare": "husky install",
-    "commit": "npm run lint && npm run test && git add . && git-cz"
+    "commit": "git add . && git-cz"
   },
   "author": "Jose Eduardo Almeida",
   "license": "ISC",
@@ -31,7 +31,10 @@
     "@types/node": "^20.11.19",
     "@types/supertest": "^6.0.2",
     "@types/uuid": "^9.0.8",
+    "@commitlint/cli": "^17.8.1",
+    "@commitlint/config-conventional": "^17.8.1",
     "commitizen": "^4.3.0",
+    "concurrently": "^8.0.1",
     "cz-conventional-changelog": "^3.3.0",
     "husky": "^8.0.0",
     "jest": "^29.7.0",
