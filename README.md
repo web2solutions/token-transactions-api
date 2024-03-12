@@ -117,6 +117,17 @@ It knows it internal domain use cases.
 It doesn't knows external domain use cases.
 
 3.`Use Case`
+
+The `Use Cases`, as the meaning of the words, are the use cases implemented in the Product. 
+
+They represents the features delivered to the customers.
+
+`It is a domain's component.` They known and consumed by the `Domain Service` component only.
+
+They are the point entry for all `Data Repository` calls. They handle `Data Models` rather than raw objects.
+
+They have an associated `Data Repository` that is injected into it scope when calling `Use Case` clojure.
+
 4.`Data Repository`
 5.`Data Adapter`
 
