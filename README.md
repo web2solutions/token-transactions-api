@@ -157,6 +157,22 @@ It doesn't knows external domain use cases.
 2. Reach http://localhost:3000/docs/1.0.0 to see the JSON version of the API documentation.
 
 
+## Contributing to the project
+
+1. Create a new branch.
+2. `Run the app in TDD mode - live reload of tests`
+
+```bash
+  npm run tdd
+```
+
+3. Make your changes.
+4. Commit it
+5. Ask for PR
+
+
+
+
 ## Technical Debits
 
 1 . Turn on following lint rules and fix the code:
