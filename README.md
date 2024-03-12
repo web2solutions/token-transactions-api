@@ -116,6 +116,10 @@ It knows it internal domain use cases.
 
 It doesn't knows external domain use cases.
 
+3.`Use Case`
+4.`Data Repository`
+5.`Data Adapter`
+
 ## Required stack
 
 - Node.js (20 preferred)
