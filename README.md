@@ -79,7 +79,7 @@ Request Handler <- Domain Service <- Domain Use Case <- Data Repository <- Data 
 
 ### Main components and their responsibility scope
 
-1.`Request Handlers`
+#### 1.`Request Handlers`
 
 It is the entry point in a request to the service. 
 
@@ -98,7 +98,7 @@ It may offers adapters for different outside service interfaces:
 - Events/SNS
 - Events/etc
 
-2.`Domain Services`
+#### 2.`Domain Service`
 
 It is the entry point for the application core (domains).
 
@@ -116,7 +116,7 @@ It knows it internal domain use cases.
 
 It doesn't knows external domain use cases.
 
-3.`Use Case`
+#### 3.`Use Case`
 
 The `Use Cases`, as the meaning of the words, are the use cases implemented in the Product. 
 
@@ -128,7 +128,7 @@ They are the point entry for all `Data Repository` calls. They handle `Data Mode
 
 They have an associated `Data Repository` that is injected into it scope when calling `Use Case` clojure.
 
-4.`Data Repository`
+#### 4.`Data Repository`
 
 The `Data Repository` layer implements, in a agnostic manner, all actions related to the data persistency.
 
@@ -136,7 +136,7 @@ It does not talk directly to a database. I has a port to adapt different Databas
 
 `It is a domain's component.` They are consumed by `Use Case` component only.
 
-5.`Data Adapter`
+#### 5.`Data Adapter`
 
 The `Data adapter` is a kind of database client implementation that respect the `Data Repository` port.
 
