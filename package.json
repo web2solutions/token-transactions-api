@@ -10,7 +10,7 @@
     "prepare": "husky install",
     "commit": "npm run lint && npm run test && git add . && git-cz",
     "lint": "eslint . --ext .ts",
-    "lint-fix": "eslint . --ext .ts --fix",
+    "lint:fix": "eslint . --ext .ts --fix",
     "docker:composeredis": "docker compose -f \"docker-compose-redis.yml\" up -d --build",
     "docker:stop": "docker-compose stop",
     "docker:restart": "docker compose -f \"docker-compose-redis.yml\" down && npm run docker:composeredis",

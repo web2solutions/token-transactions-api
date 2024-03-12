@@ -199,6 +199,23 @@ It may implement database access through native drivers or ORMs and ODMs.
 5. Ask for PR
 
 
+### Tooling
+
+`lint code`
+
+```bash
+  npm run lint
+```
+
+`lint && fix code`
+
+```bash
+  npm run lint:fix
+```
+
+`Commiting code`
+
+Commit messages must follow the [Commitizen conventional changelog](https://commitizen-tools.github.io/commitizen/changelog/)
 
 
 ## Technical Debits
