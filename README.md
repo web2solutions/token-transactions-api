@@ -155,3 +155,25 @@ It doesn't knows external domain use cases.
 
 1. Reach the URL http://localhost:3000/doc/ and click in the `Version 1.0.0`. It will open the API documentation.
 2. Reach http://localhost:3000/docs/1.0.0 to see the JSON version of the API documentation.
+
+
+## Technical Debits
+
+1 . Turn on following lint rules and fix the code:
+
+```javascript
+      'no-underscore-dangle': 'off',
+      'import/prefer-default-export': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      'import/no-cycle' : 'off',
+      'arrow-body-style' : 'off',
+      'jest/unbound-method': 'off',
+```
+
+2. Create a `Dead-Letter` queue for transactions rejected when the resource is locked by the mutex
+3. Implement a ServerSentEvent (EventSource) to notify the client about the execution of the items from the `Dead-Leter` queue.
+4. Implement dbClient for Mongoose
+5. Implement dbClient for Sequelize
+6. Implement dbClient from DynamoDB
+7. Implement WebServer for Hyper-Express
+8. Unit testing - test suite
