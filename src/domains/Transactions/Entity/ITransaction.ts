@@ -1,6 +1,7 @@
+// eslint-disable-next-line no-shadow
 export enum ETransactionType {
-  send = "send",
-  receive = "receive",
+  send = 'send',
+  receive = 'receive',
 }
 
 export interface ITransaction {

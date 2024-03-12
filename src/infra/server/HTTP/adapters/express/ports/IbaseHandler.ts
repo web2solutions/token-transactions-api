@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+
 export interface IbaseHandler {
     method: string;
     path: string;

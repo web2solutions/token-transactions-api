@@ -9,8 +9,8 @@
     "tdd": "jest --watchAll --verbose --detectOpenHandles",
     "prepare": "husky install",
     "commit": "npm run lint && npm run test && git add . && git-cz",
-    "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint src/**/*.ts --fix"
+    "lint": "eslint . --ext .ts",
+    "lint-fix": "eslint . --ext .ts --fix"
   },
   "author": "Jose Eduardo Almeida",
   "license": "ISC",
@@ -40,6 +40,12 @@
     "concurrently": "^8.0.1",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.57.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jest": "^27.9.0",
+    "eslint-plugin-module-resolver": "^1.5.0",
+    "eslint-plugin-no-async-foreach": "^0.1.1",
     "husky": "^8.0.0",
     "jest": "^29.7.0",
     "supertest": "^6.3.4",

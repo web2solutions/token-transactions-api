@@ -1,18 +1,20 @@
-import { IAccount, Account } from '../';
 import { BaseRepo } from '@src/domains/ports/persistence/BaseRepo';
 import { IRepoConfig } from '@src/domains/ports/persistence/IRepoConfig';
 import { throwIfNotFound } from '@src/domains/validators';
+import { IAccount, Account } from '..';
 
 let accountDataRepository: any;
 
 export class AccountDataRepository extends BaseRepo<Account> {
   public store;
+
   public limit: number;
+
   // private dbClient: IDbClient;
-  private constructor(config: IRepoConfig<IAccount>) {
+  private constructor(config: IRepoConfig) {
     super(config);
     const { limit } = config;
-    //this.dbClient = dbClient;
+    // this.dbClient = dbClient;
     // points to a collection or table
     this.store = this.dbClient.stores.Account;
     this.limit = limit ?? 30;
@@ -53,7 +55,7 @@ export class AccountDataRepository extends BaseRepo<Account> {
 
   public async getByUserEmail(userEmail: string): Promise<Account> {
     try {
-      if(!this.store.getByUserEmail) return Promise.reject(new Error('getByUserEmail - not implemented'));
+      if (!this.store.getByUserEmail) return Promise.reject(new Error('getByUserEmail - not implemented'));
       const rawAccount = await this.store.getByUserEmail(userEmail);
       throwIfNotFound(!!rawAccount);
       return Promise.resolve(new Account({ ...rawAccount, readOnly: true }));
@@ -62,16 +64,14 @@ export class AccountDataRepository extends BaseRepo<Account> {
     }
   }
 
-  
-
   public async getAll(page = 1): Promise<Account[]> {
     const result = await this.store.getAll(page, this.limit);
     return result as unknown as Account[];
   }
-  
-  public static compile (config: IRepoConfig<IAccount>): AccountDataRepository {
-    if(accountDataRepository) return accountDataRepository;
-    accountDataRepository = new AccountDataRepository(config)
+
+  public static compile(config: IRepoConfig): AccountDataRepository {
+    if (accountDataRepository) return accountDataRepository;
+    accountDataRepository = new AccountDataRepository(config);
     return accountDataRepository;
   }
 }

@@ -1,5 +1,6 @@
-import { Express } from "express";
-import { IbaseHandler } from "../adapters/express/ports/IbaseHandler";
+import { Express } from 'express';
+import { IbaseHandler } from '../adapters/express/ports/IbaseHandler';
+
 type HTTPServerTypes = Express;
 
 export interface IHTTPServer {

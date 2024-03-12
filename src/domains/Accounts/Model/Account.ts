@@ -1,24 +1,30 @@
 /* eslint-disable no-underscore-dangle */
-import { IAccount } from '../';
-import { canNotBeEmpty, mustBeNumeric, mustBePositiveNumber, canNotWriteDirectly } from '../../validators';
 import { BaseModel } from '@src/domains/ports/persistence/BaseModel';
+import { IAccount } from '..';
+import {
+  canNotBeEmpty, mustBeNumeric, mustBePositiveNumber, canNotWriteDirectly
+} from '../../validators';
 
 export class Account extends BaseModel<IAccount> implements IAccount {
   private _userEmail: string = '';
+
   private _balance: number = 0;
+
   private _readOnly: boolean = false;
   // private _excludeOnSerialize: string[] = ['send', 'receive'];
-  
-  constructor({ userEmail, id, readOnly, balance }: { userEmail: string, id?: string, balance?: number, readOnly?: boolean }) {
+
+  constructor({
+    userEmail, id, readOnly, balance
+  }: { userEmail: string, id?: string, balance?: number, readOnly?: boolean }) {
     super(id);
     this.userEmail = userEmail;
     this._readOnly = readOnly ?? false;
-    if(typeof balance !== 'undefined') {
+    if (typeof balance !== 'undefined') {
       mustBeNumeric('balance', balance);
       mustBePositiveNumber('balance', balance);
     }
-    this._balance = balance ?? 0
-    this._excludeOnSerialize = ['send', 'receive']
+    this._balance = balance ?? 0;
+    this._excludeOnSerialize = ['send', 'receive'];
   }
 
   public get userEmail(): string {
@@ -26,7 +32,7 @@ export class Account extends BaseModel<IAccount> implements IAccount {
   }
 
   public set userEmail(userEmail: string) {
-    if(this._readOnly) return;
+    if (this._readOnly) return;
     canNotBeEmpty('userEmail', userEmail);
     this._userEmail = userEmail;
   }
@@ -35,6 +41,7 @@ export class Account extends BaseModel<IAccount> implements IAccount {
     return this._balance;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   public set balance(balance: number) {
     canNotWriteDirectly('balance');
   }
@@ -46,6 +53,7 @@ export class Account extends BaseModel<IAccount> implements IAccount {
     mustBePositiveNumber(`'The amount to send can not be greater than balance - Balance: ${this.balance} - Amount: ${amount}`, this.balance - amount);
     this._balance = this.balance - amount;
   }
+
   public receive(transaction: any): void {
     const amount = transaction.amount as number;
     mustBeNumeric('amount', amount);

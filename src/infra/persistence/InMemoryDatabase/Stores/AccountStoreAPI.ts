@@ -1,14 +1,13 @@
-
 import { IAccount } from '@src/domains/Accounts/Entity/IAccount';
 import { IStore } from '@src/domains/ports/persistence/IStore';
-import { 
+import {
   _DATABASE_NOT_FOUND_ERROR_NAME_,
-  _DATABASE_DUPLICATED_RECORD_ERROR_NAME_,
-} from '@src/infra/config/constants'
+  _DATABASE_DUPLICATED_RECORD_ERROR_NAME_
+} from '@src/infra/config/constants';
 
 const accountStore = new Map<string, unknown>();
 const accountStoreUniqueIndexes = {
-  userEmail: new Map<string, unknown>(),
+  userEmail: new Map<string, unknown>()
 };
 export const AccountStoreAPI = {
   delete: async (id: string) => {
@@ -65,7 +64,7 @@ export const AccountStoreAPI = {
       const object = value;
       const strName = object.userEmail.toString().toLowerCase();
 
-      accountStore.set(key, { ...object, _updatedAt: new Date(), });
+      accountStore.set(key, { ...object, _updatedAt: new Date() });
       accountStoreUniqueIndexes.userEmail.delete(strOldName);
       accountStoreUniqueIndexes.userEmail.set(strName, object);
       return Promise.resolve(value);
@@ -84,7 +83,7 @@ export const AccountStoreAPI = {
       }
       return Promise.resolve({
         ...data,
-        id: data.id,
+        id: data.id
       });
     } catch (error) {
       return Promise.reject(error);
@@ -109,15 +108,15 @@ export const AccountStoreAPI = {
         // eslint-disable-next-line operator-assignment
         // iterated = iterated + 1;
         // if (iterated > startAt) {
-          //if (records.length < limit) {
-            records.push(value as IAccount);
-          //}
+        // if (records.length < limit) {
+        records.push(value as IAccount);
+        // }
         // }
       }
-  
+
       return Promise.resolve(records);
     } catch (error) {
       return Promise.reject(error);
     }
-  },
+  }
 } as IStore<IAccount>;

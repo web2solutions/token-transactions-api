@@ -1,26 +1,24 @@
-/*global  describe, it, expect */
-import request from "supertest";
+/* global  describe, it, expect */
+import request from 'supertest';
 
+import {
+  InMemoryDbClient
+} from '@src/infra/persistence/InMemoryDatabase/InMemoryDbClient';
+import {
+  RestAPI
+} from '@src/infra/RestAPI';
+
+import {
+  IAccount
+} from '@src/domains/Accounts';
 import {
   requestHeaderEmployee1,
   requestHeaderEmployee2,
   requestHeaderEmployee3,
   requestHeaderEmployee4,
   requestHeaderGuest,
-  account1,
+  account1
 } from '../mock';
-
-import {
-  InMemoryDbClient
-} from "@src/infra/persistence/InMemoryDatabase/InMemoryDbClient";
-import {
-  RestAPI
-} from "@src/infra/RestAPI";
-
-import {
-  IAccount,
-} from "@src/domains/Accounts";
-
 
 const API = new RestAPI(InMemoryDbClient);
 
@@ -33,7 +31,7 @@ describe('deleteAccountById suite', () => {
       balance
     } = account1;
     const response = await request(API.server.application)
-      .post(`/api/1.0.0/accounts`)
+      .post('/api/1.0.0/accounts')
       .send({
         userEmail,
         balance
@@ -41,24 +39,23 @@ describe('deleteAccountById suite', () => {
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .set(requestHeaderEmployee1);
-    expect(response.statusCode).toBe(201);
     createdAccount = response.body;
-
   });
-  
 
-  it('Employee1 must be able to delete account', async () => {
+  it('employee1 must be able to delete account', async () => {
+    expect.hasAssertions();
     const response = await request(API.server.application)
       .delete(`/api/1.0.0/accounts/${createdAccount.id}`)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .set(requestHeaderEmployee1);
-    
+
     expect(response.statusCode).toBe(200);
     expect(response.body.deleted).toBeTruthy();
   });
 
-  it('Employee2 must not be able to delete an account - Forbidden: delete_account role required', async () => {
+  it('employee2 must not be able to delete an account - Forbidden: delete_account role required', async () => {
+    expect.hasAssertions();
     const response = await request(API.server.application)
       .delete(`/api/1.0.0/accounts/${createdAccount.id}`)
       .set('Content-Type', 'application/json')
@@ -69,7 +66,8 @@ describe('deleteAccountById suite', () => {
     expect(response.body.message).toBe('Forbidden - Insufficient permission - user must have the delete_account role');
   });
 
-  it('Employee3 must not be able to delete an account - Forbidden: delete_account role required', async () => {
+  it('employee3 must not be able to delete an account - Forbidden: delete_account role required', async () => {
+    expect.hasAssertions();
     const response = await request(API.server.application)
       .delete(`/api/1.0.0/accounts/${createdAccount.id}`)
       .set('Content-Type', 'application/json')
@@ -80,7 +78,8 @@ describe('deleteAccountById suite', () => {
     expect(response.body.message).toBe('Forbidden - Insufficient permission - user must have the delete_account role');
   });
 
-  it('Employee4 must not be able to delete an account - Forbidden: delete_account role required', async () => {
+  it('employee4 must not be able to delete an account - Forbidden: delete_account role required', async () => {
+    expect.hasAssertions();
     const response = await request(API.server.application)
       .delete(`/api/1.0.0/accounts/${createdAccount.id}`)
       .set('Content-Type', 'application/json')
@@ -91,7 +90,8 @@ describe('deleteAccountById suite', () => {
     expect(response.body.message).toBe('Forbidden - Insufficient permission - user must have the delete_account role');
   });
 
-  it('Guest must not be able to delete an account - Unauthorized', async () => {
+  it('guest must not be able to delete an account - Unauthorized', async () => {
+    expect.hasAssertions();
     const response = await request(API.server.application)
       .delete(`/api/1.0.0/accounts/${createdAccount.id}`)
       .set('Content-Type', 'application/json')
@@ -100,5 +100,4 @@ describe('deleteAccountById suite', () => {
     expect(response.statusCode).toBe(401);
     expect(response.body.message).toBe('user not found');
   });
-
 });

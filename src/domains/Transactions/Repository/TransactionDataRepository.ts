@@ -1,17 +1,19 @@
-import { ITransaction, Transaction } from '../';
 import { BaseRepo } from '@src/domains/ports/persistence/BaseRepo';
 import { IRepoConfig } from '@src/domains/ports/persistence/IRepoConfig';
 import { throwIfNotFound } from '@src/domains/validators';
+import { ITransaction, Transaction } from '..';
 
 let transactionDataRepository: any;
 export class TransactionDataRepository extends BaseRepo<Transaction> {
   public store;
+
   public limit: number;
+
   // private dbClient: IDbClient;
-  private constructor(config: IRepoConfig<ITransaction>) {
+  private constructor(config: IRepoConfig) {
     super(config);
     const { limit } = config;
-    //this.dbClient = dbClient;
+    // this.dbClient = dbClient;
     // points to a collection or table
     this.store = this.dbClient.stores.Transaction;
     this.limit = limit ?? 30;
@@ -44,7 +46,12 @@ export class TransactionDataRepository extends BaseRepo<Transaction> {
     try {
       const rawTransaction = await this.store.getOneById(id);
       throwIfNotFound(!!rawTransaction);
-      return Promise.resolve(new Transaction({ ...(rawTransaction as unknown as ITransaction), readOnly: true }));
+      return Promise.resolve(
+        new Transaction({
+          ...(rawTransaction as unknown as ITransaction),
+          readOnly: true
+        })
+      );
     } catch (error) {
       return Promise.reject(error);
     }
@@ -54,10 +61,10 @@ export class TransactionDataRepository extends BaseRepo<Transaction> {
     const result = await this.store.getAll(page, this.limit);
     return result as unknown as Transaction[];
   }
- 
-  public static compile (config: IRepoConfig<ITransaction>): TransactionDataRepository {
-    if(transactionDataRepository) return transactionDataRepository;
-    transactionDataRepository = new TransactionDataRepository(config)
+
+  public static compile(config: IRepoConfig): TransactionDataRepository {
+    if (transactionDataRepository) return transactionDataRepository;
+    transactionDataRepository = new TransactionDataRepository(config);
     return transactionDataRepository;
   }
 }

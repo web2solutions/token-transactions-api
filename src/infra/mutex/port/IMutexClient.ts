@@ -1,4 +1,5 @@
 import { IServiceResponse } from '@src/infra/service/port/IServiceResponse';
+
 export interface IMutexClient {
     connect(): Promise<IServiceResponse>;
     disconnect(): Promise<IServiceResponse>;

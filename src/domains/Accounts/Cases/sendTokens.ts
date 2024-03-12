@@ -1,6 +1,10 @@
-import { IAccount, Account, AccountDataRepository } from '../';
+import { Account, AccountDataRepository } from '..';
 
-export const sendTokens = async (account: Account, transaction: any, repo: AccountDataRepository): Promise<Account> => {
+export const sendTokens = async (
+  account: Account,
+  transaction: any,
+  repo: AccountDataRepository
+): Promise<Account> => {
   try {
     // const account = await repo.getByUserEmail(userEmail);
     // account = new Account(payload);
@@ -10,6 +14,6 @@ export const sendTokens = async (account: Account, transaction: any, repo: Accou
     return Promise.resolve(document);
   } catch (err) {
     // console.log(err)
-    return Promise.reject(err)
+    return Promise.reject(err);
   }
 };

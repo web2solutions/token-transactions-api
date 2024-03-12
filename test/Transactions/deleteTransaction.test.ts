@@ -1,27 +1,26 @@
-/*global  describe, it, expect */
-import request from "supertest";
+/* global  describe, it, expect */
+import request from 'supertest';
 
+import {
+  InMemoryDbClient
+} from '@src/infra/persistence/InMemoryDatabase/InMemoryDbClient';
+import {
+  RestAPI
+} from '@src/infra/RestAPI';
+
+import {
+  ITransaction
+} from '@src/domains/Transactions';
+
+import { mutexService } from '@src/infra/mutex/adapter/MutexService';
 import {
   requestHeaderEmployee1,
   requestHeaderEmployee2,
   requestHeaderEmployee3,
   requestHeaderEmployee4,
   requestHeaderGuest,
-  transaction1,
+  transaction1
 } from '../mock';
-
-import {
-  InMemoryDbClient
-} from "@src/infra/persistence/InMemoryDatabase/InMemoryDbClient";
-import {
-  RestAPI
-} from "@src/infra/RestAPI";
-
-import {
-  ITransaction,
-} from "@src/domains/Transactions";
-
-import { mutexService } from "@src/infra/mutex/adapter/MutexService";
 
 const API = new RestAPI(InMemoryDbClient, mutexService);
 
@@ -31,49 +30,50 @@ describe('deleteTransactionById suite', () => {
     const {
       userEmail,
       amount,
-      type,
+      type
     } = transaction1;
     await request(API.server.application)
-      .post(`/api/1.0.0/accounts`)
+      .post('/api/1.0.0/accounts')
       .send({
         userEmail,
-        balance: 0,
+        balance: 0
       })
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .set(requestHeaderEmployee1);
-      
+
     const response = await request(API.server.application)
-      .post(`/api/1.0.0/transactions`)
+      .post('/api/1.0.0/transactions')
       .send({
         userEmail,
         amount,
-        type,
+        type
       })
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .set(requestHeaderEmployee1);
-    expect(response.statusCode).toBe(201);
-    createdTransaction = response.body;
 
+    createdTransaction = response.body;
   });
-  
-  afterAll(async() => {
+
+  afterAll(async () => {
     await API.stop();
   });
 
-  it('Employee1 must be able to delete transaction', async () => {
+  it('employee1 must be able to delete transaction', async () => {
+    expect.hasAssertions();
     const response = await request(API.server.application)
       .delete(`/api/1.0.0/transactions/${createdTransaction.id}`)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .set(requestHeaderEmployee1);
-    
+
     expect(response.statusCode).toBe(200);
     expect(response.body.deleted).toBeTruthy();
   });
 
-  it('Employee2 must not be able to delete an transaction - Forbidden: delete_transaction role required', async () => {
+  it('employee2 must not be able to delete an transaction - Forbidden: delete_transaction role required', async () => {
+    expect.hasAssertions();
     const response = await request(API.server.application)
       .delete(`/api/1.0.0/transactions/${createdTransaction.id}`)
       .set('Content-Type', 'application/json')
@@ -84,7 +84,8 @@ describe('deleteTransactionById suite', () => {
     expect(response.body.message).toBe('Forbidden - Insufficient permission - user must have the delete_transaction role');
   });
 
-  it('Employee3 must not be able to delete an transaction - Forbidden: delete_transaction role required', async () => {
+  it('employee3 must not be able to delete an transaction - Forbidden: delete_transaction role required', async () => {
+    expect.hasAssertions();
     const response = await request(API.server.application)
       .delete(`/api/1.0.0/transactions/${createdTransaction.id}`)
       .set('Content-Type', 'application/json')
@@ -95,7 +96,8 @@ describe('deleteTransactionById suite', () => {
     expect(response.body.message).toBe('Forbidden - Insufficient permission - user must have the delete_transaction role');
   });
 
-  it('Employee4 must not be able to delete an transaction - Forbidden: delete_transaction role required', async () => {
+  it('employee4 must not be able to delete an transaction - Forbidden: delete_transaction role required', async () => {
+    expect.hasAssertions();
     const response = await request(API.server.application)
       .delete(`/api/1.0.0/transactions/${createdTransaction.id}`)
       .set('Content-Type', 'application/json')
@@ -106,7 +108,8 @@ describe('deleteTransactionById suite', () => {
     expect(response.body.message).toBe('Forbidden - Insufficient permission - user must have the delete_transaction role');
   });
 
-  it('Guest must not be able to delete an transaction - Unauthorized', async () => {
+  it('guest must not be able to delete an transaction - Unauthorized', async () => {
+    expect.hasAssertions();
     const response = await request(API.server.application)
       .delete(`/api/1.0.0/transactions/${createdTransaction.id}`)
       .set('Content-Type', 'application/json')
@@ -115,5 +118,4 @@ describe('deleteTransactionById suite', () => {
     expect(response.statusCode).toBe(401);
     expect(response.body.message).toBe('user not found');
   });
-
 });

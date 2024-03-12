@@ -1,34 +1,36 @@
-
-import { 
-    RedisClientType, 
-    RedisFunctions, 
-    RedisScripts, 
-    RedisModules, 
-    createClient, 
+import {
+  RedisClientType,
+  RedisFunctions,
+  RedisScripts,
+  RedisModules,
+  createClient
 } from 'redis';
 
 import { redisConfig } from '@src/infra/config/redis';
 import { IMutexClient } from '@src/infra/mutex/port/IMutexClient';
 import { IServiceResponse } from '@src/infra/service/port/IServiceResponse';
 import { ServiceResponse } from '@src/infra/service/adapter/ServiceResponse';
+
 class MutexService implements IMutexClient {
   private client: RedisClientType<RedisModules, RedisFunctions, RedisScripts>;
+
   private prefix: string;
+
   private connected: boolean;
-  
+
   constructor() {
     this.client = createClient(redisConfig);
-    this.client.on('error', (err) => console.log('Redis Client Error', err));
-    this.client.on('connect', () => { 
-      console.log('Redis connected')
+    // this.client.on('error', (err) => console.log('Redis Client Error', err));
+    this.client.on('connect', () => {
+      // console.log('Redis connected');
       this.connected = true;
     });
-    this.client.on('end', () => { 
-      console.log('Redis disconnected')
+    this.client.on('end', () => {
+      // console.log('Redis disconnected');
       this.connected = false;
     });
-    this.client.on('ready', () => console.log('Redis ready'));
-    
+    // this.client.on('ready', () => console.log('Redis ready'));
+
     this.prefix = 'mutex__';
     this.connected = false;
   }
@@ -39,9 +41,9 @@ class MutexService implements IMutexClient {
       if (wasAlreadyLocked.result) return { result: { wasAlreadyLocked: wasAlreadyLocked.result } };
       await this.connect();
       await this.client.set(`${this.prefix}:${resourceName}:${uuid}`, 'locked');
-      return new ServiceResponse({ result: { locked: true} });
+      return new ServiceResponse({ result: { locked: true } });
     } catch (error: unknown) {
-      console.log(error);
+      // console.log(error);
       return new ServiceResponse({ error: error as Error });
     }
   }
@@ -72,9 +74,11 @@ class MutexService implements IMutexClient {
     try {
       await this.client.quit();
       this.connected = false;
-      return { result: {
-        connected: this.connected
-      } };
+      return {
+        result: {
+          connected: this.connected
+        }
+      };
     } catch (error: unknown) {
       // console.log(error);
       return new ServiceResponse({ error: error as Error });
@@ -83,12 +87,14 @@ class MutexService implements IMutexClient {
 
   public async connect(): Promise<IServiceResponse> {
     try {
-      if(!this.connected) {
+      if (!this.connected) {
         await this.client.connect();
       }
-      return { result: {
-        connected: this.connected
-      } };
+      return {
+        result: {
+          connected: this.connected
+        }
+      };
     } catch (error: unknown) {
       // console.log(error);
       return new ServiceResponse({ error: error as Error });

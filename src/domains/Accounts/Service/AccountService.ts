@@ -1,27 +1,27 @@
-import { 
-    IAccount, 
-    Account, 
-    AccountDataRepository, 
-    createAccount, 
-    deleteAccountById, 
-    getAccountById, 
-    getAllAccounts,
-    getAccountByUserEmail,
-    sendTokens,
-    receiveTokens,
-    AccountCreateDTO 
-} from '../';
 import { BaseService } from '@src/domains/ports/persistence/BaseService';
 import { IServiceConfig, TRepos } from '@src/domains/ports/persistence/IServiceConfig';
+import {
+  Account,
+  AccountDataRepository,
+  createAccount,
+  deleteAccountById,
+  getAccountById,
+  getAllAccounts,
+  getAccountByUserEmail,
+  sendTokens,
+  receiveTokens,
+  AccountCreateDTO
+} from '..';
 
 interface IAccountServiceConfig extends IServiceConfig {
-    
+
 }
 let accountService: any;
 export class AccountService<T> extends BaseService<T, Account> {
-  private repo:  AccountDataRepository;
+  private repo: AccountDataRepository;
+
   public repos: TRepos;
-  
+
   private constructor(config: IAccountServiceConfig) {
     super(config);
     const { repos } = config;
@@ -30,10 +30,11 @@ export class AccountService<T> extends BaseService<T, Account> {
   }
 
   public async create(data: AccountCreateDTO): Promise<T> {
-    const document = await createAccount( (data ?? {}), this.repo );
+    const document = await createAccount((data ?? {}), this.repo);
     return document as T;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   public async update(id: string, data: T): Promise<T> {
     return Promise.resolve(data);
   }
@@ -67,23 +68,23 @@ export class AccountService<T> extends BaseService<T, Account> {
   }
 
   public async sendTokens(account: Account, data: any): Promise<Account> {
-    const updatedAccount = await sendTokens(account, data, this.repo)
+    const updatedAccount = await sendTokens(account, data, this.repo);
     return updatedAccount;
   }
 
-  public async receiveTokens(account: Account,data: any): Promise<Account> {
-    const updatedAccount = await receiveTokens(account, data, this.repo)
+  public async receiveTokens(account: Account, data: any): Promise<Account> {
+    const updatedAccount = await receiveTokens(account, data, this.repo);
     return updatedAccount;
   }
 
-  public async getAll(page = 1): Promise<T[]> {
+  public async getAll(): Promise<T[]> {
     const accounts = await getAllAccounts(this.repo);
     return accounts as T[];
   }
-  
-  public static create (config: IAccountServiceConfig) {
-    if(accountService) return accountService;
-    accountService = new AccountService(config)
+
+  public static create(config: IAccountServiceConfig) {
+    if (accountService) return accountService;
+    accountService = new AccountService(config);
     return accountService;
   }
 }
