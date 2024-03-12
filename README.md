@@ -104,7 +104,7 @@ It is the entry point for the application core (domains).
 
 `It is a domain's component.`
 
-May works as aggregation root talking directly to injected domain services (aka domains and subdomains).
+May works as aggregation root / bounded contexts talking directly to injected domain services (aka domains and subdomains).
 
 It should be the unique option working as communication interface between `infrastructure` and `domain components`.
 
@@ -122,14 +122,27 @@ The `Use Cases`, as the meaning of the words, are the use cases implemented in t
 
 They represents the features delivered to the customers.
 
-`It is a domain's component.` They known and consumed by the `Domain Service` component only.
+`It is a domain's component.` They known and are consumed by the `Domain Service` component only.
 
 They are the point entry for all `Data Repository` calls. They handle `Data Models` rather than raw objects.
 
 They have an associated `Data Repository` that is injected into it scope when calling `Use Case` clojure.
 
 4.`Data Repository`
+
+The `Data Repository` layer implements, in a agnostic manner, all actions related to the data persistency.
+
+It does not talk directly to a database. I has a port to adapt different Database Clients.
+
+`It is a domain's component.` They are consumed by `Use Case` component only.
+
 5.`Data Adapter`
+
+The `Data adapter` is a kind of database client implementation that respect the `Data Repository` port.
+
+It may implement database access through native drivers or ORMs and ODMs.
+
+`It is a domain's component.`
 
 ## Required stack
 
