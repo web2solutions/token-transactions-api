@@ -247,6 +247,14 @@ It may implement database access through native drivers or ORMs and ODMs.
   npm run lint:fix
 ```
 
+`commit`
+
+It will run `lint` and `test` before asking info about the commit
+
+```bash
+  npm run commit
+```
+
 `Commiting code`
 
 Commit messages must follow the [Commitizen conventional changelog](https://commitizen-tools.github.io/commitizen/changelog/)

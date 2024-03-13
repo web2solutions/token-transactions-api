@@ -46,6 +46,7 @@ describe('checkAccountIntegrity suite', () => {
 
     expect(response.statusCode).toBe(200);
     const lastBlock = createdAccount.chain[createdAccount.chain.length - 1];
+
     expect(createdAccount.balance).toBe(lastBlock.data.balance);
   });
 
