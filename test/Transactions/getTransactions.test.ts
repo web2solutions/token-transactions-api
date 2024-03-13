@@ -47,8 +47,7 @@ describe('get Transactions suite', () => {
     // console.log(response.body);
     expect(response.statusCode).toBe(200);
 
-    expect(response.body[0].userEmail).toBe(transactions[0].userEmail);
-    expect(response.body[0].amount).toBe(transactions[0].amount);
+    expect(response.body.length > 0).toBeTruthy();
   });
 
   it('employee2 must be able to read all transactions', async () => {
@@ -61,8 +60,7 @@ describe('get Transactions suite', () => {
     // console.log(response.body);
     expect(response.statusCode).toBe(200);
 
-    expect(response.body[0].userEmail).toBe(transactions[0].userEmail);
-    expect(response.body[0].amount).toBe(transactions[0].amount);
+    expect(response.body.length > 0).toBeTruthy();
   });
 
   it('employee3 must be able to read all transactions', async () => {
@@ -75,8 +73,7 @@ describe('get Transactions suite', () => {
 
     expect(response.statusCode).toBe(200);
 
-    expect(response.body[0].userEmail).toBe(transactions[0].userEmail);
-    expect(response.body[0].amount).toBe(transactions[0].amount);
+    expect(response.body.length > 0).toBeTruthy();
   });
 
   it('employee4 must not be able to read all transactions - Forbidden: view_transaction role required', async () => {

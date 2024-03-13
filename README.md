@@ -53,6 +53,14 @@ Actually it has 2 Domains:
     }
 ```
 
+`Full implemented Use Cases`:
+
+- *createAccount*
+- *getAllAccounts*
+- *getAccountById*
+- *sendTokens*
+- *receiveTokens*
+
 2. Transactions
 
 ```typescript
@@ -66,8 +74,20 @@ Actually it has 2 Domains:
     }
 ```
 
+`Full implemented Use Cases`:
+
+- *createTransaction*
+- *getAllTransaction*
+- *getTransactionById*
+
 Transactions represent a change in the balance of an account - a `send` transaction removes tokens from an account and a `receive` transaction adds tokens to an account. \
-A transaction can only be associated with one account. An account can be associated with many transactions. 
+A transaction can only be associated with one account. An account can be associated with many transactions.
+
+### API documentation
+
+The API doc might be visualized at: http://localhost:3000/doc/
+
+***Note:*** Remember to start the application before trying to reach it through the browser.
 
 ### Request data workflow through the architecture's components
 

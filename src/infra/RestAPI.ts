@@ -201,6 +201,7 @@ export class RestAPI {
               amount,
               type
             });
+            // console.log(r);
           } catch (error: any) {
             // console.log(error.message)
           }
