@@ -26,8 +26,9 @@ describe('add Account suite', () => {
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .set(requestHeaderEmployee1);
-    // console.log(response.body)
     expect(response.body.userEmail).toBe(account1.userEmail);
+    expect(response.body.chain[0].data.balance).toBe(0);
+    expect(response.body.chain[0].data.id).toBe('_genesis_');
     expect(response.statusCode).toBe(201);
   });
 
@@ -42,6 +43,8 @@ describe('add Account suite', () => {
       .set(requestHeaderEmployee1);
     // console.log(response.body)
     expect(response.body.userEmail).toBe(account2.userEmail);
+    expect(response.body.chain[0].data.balance).toBe(0);
+    expect(response.body.chain[0].data.id).toBe('_genesis_');
     expect(response.statusCode).toBe(201);
   });
 

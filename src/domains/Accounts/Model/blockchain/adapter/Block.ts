@@ -1,13 +1,19 @@
+/* eslint-disable no-console */
 import SHA256 from 'crypto-js/sha256';
 
-import { IBlockConstructor, IBlockConfig, IBlock } from './interfaces';
+import {
+  // IBlockConstructor,
+  IBlockConfig,
+  IBlock,
+  ITransactionBlock
+} from '../port/interfaces';
 
-export const Block: IBlockConstructor = class Block implements IBlock {
+export class Block implements IBlock {
   public position: number;
 
   public previousHash: string;
 
-  #_data: string | number;
+  public data: ITransactionBlock;
 
   public timestamp: Date;
 
@@ -21,15 +27,10 @@ export const Block: IBlockConstructor = class Block implements IBlock {
     } = blockContent;
     this.position = position;
     this.previousHash = previousHash;
-    this.#_data = data;
+    this.data = data;
     this.timestamp = new Date();
     this.hash = this.calculateHash();
     this.mineBlock(mineLevel);
-  }
-
-  get data(): string | number {
-    const data = this.#_data;
-    return data;
   }
 
   public toJson() {
@@ -57,4 +58,4 @@ export const Block: IBlockConstructor = class Block implements IBlock {
       this.hash = this.calculateHash();
     }
   }
-};
+}

@@ -1,22 +1,26 @@
+import { ITransaction } from '@src/domains/Transactions';
+
+export interface ITransactionBlock extends ITransaction {
+  balance: number;
+}
 export interface IBlockConfig {
     position: number;
     previousHash: string;
-    data: string | number;
+    data: ITransactionBlock;
     mineLevel: number;
 }
-
-export interface IBlockConstructor {
-    new(blockContent: IBlockConfig): IBlock;
-}
-
 export interface IBlock {
     position: number;
     previousHash: string;
-    data: string | number;
+    data: ITransactionBlock;
     timestamp: Date;
     hash: string;
     calculateHash(): string;
     toJson(): void;
+}
+
+export interface IBlockConstructor {
+  new(blockContent: IBlockConfig): IBlock;
 }
 
 export interface IBlockChainConfig {
@@ -29,7 +33,6 @@ export interface IBlockchain {
     mineLevel: number;
     position: number;
     getLastBlock(): IBlock;
-    addBlock(block: string): IBlock;
+    addBlock(block: ITransactionBlock): IBlock;
     checkIntegrity(): boolean;
-    
 }

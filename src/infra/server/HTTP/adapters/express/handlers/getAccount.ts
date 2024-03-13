@@ -29,8 +29,7 @@ const getAccount = ({ dbClient, endPointConfig }: IHandlerFactory): IbaseHandler
             }
           });
           const account = await service.getOneById(accountId);
-          const AccountResponseDTO = { ...account };
-          res.status(200).json(AccountResponseDTO);
+          res.status(200).json(account);
         } catch (error: unknown) {
           sendErrorResponse(error as Error, res);
         }

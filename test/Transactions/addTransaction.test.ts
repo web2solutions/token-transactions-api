@@ -22,11 +22,13 @@ describe('add Transaction suite', () => {
     await API.stop();
   });
 
-  it('employee1 must be able to create a transaction - transaction data 1', async () => {
+  fit('employee1 must be able to create a transaction - transaction data 1', async () => {
     expect.hasAssertions();
-    const { userEmail, amount, type } = transaction1;
+    const { userEmail } = transaction1;
+    const amount = 7649;
+    const type = 'receive';
 
-    await request(API.server.application)
+    const createdAccountResponse = await request(API.server.application)
       .post('/api/1.0.0/accounts')
       .send({
         userEmail,
@@ -35,6 +37,8 @@ describe('add Transaction suite', () => {
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .set(requestHeaderEmployee1);
+    // console.log(createdAccountResponse.body);
+    const createdAccount = createdAccountResponse.body;
 
     const response = await request(API.server.application)
       .post('/api/1.0.0/transactions')
@@ -45,6 +49,15 @@ describe('add Transaction suite', () => {
     // console.log(response.body)
     expect(response.body.userEmail).toBe(transaction1.userEmail);
     expect(response.statusCode).toBe(201);
+
+    const responseGetAccount = await request(API.server.application)
+      .get(`/api/1.0.0/accounts/${createdAccount.id}`)
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
+      .set(requestHeaderEmployee1);
+    // console.log(responseGetAccount.body.chain)
+    expect(responseGetAccount.statusCode).toBe(200);
+    expect(responseGetAccount.body.chain[1].data.balance).toBe(amount);
   });
 
   it('employee1 must be able to create a transaction with amount equal 0 - transaction data 2', async () => {

@@ -4,6 +4,9 @@ import { IAccount } from '..';
 import {
   canNotBeEmpty, mustBeNumeric, mustBePositiveNumber, canNotWriteDirectly
 } from '../../validators';
+import { IBlock } from './blockchain/port/interfaces';
+import { Blockchain, genesisBlock } from './blockchain/adapter/BlockChain';
+import { _MINE_LEVEL_ } from './blockchain/constants';
 
 export class Account extends BaseModel<IAccount> implements IAccount {
   private _userEmail: string = '';
@@ -13,9 +16,17 @@ export class Account extends BaseModel<IAccount> implements IAccount {
   private _readOnly: boolean = false;
   // private _excludeOnSerialize: string[] = ['send', 'receive'];
 
+  private _blockChain: Blockchain;
+
   constructor({
-    userEmail, id, readOnly, balance
-  }: { userEmail: string, id?: string, balance?: number, readOnly?: boolean }) {
+    userEmail, id, readOnly, balance, chain
+  }: {
+    userEmail: string,
+    id?: string,
+    balance?: number,
+    readOnly?: boolean,
+    chain?: IBlock[],
+  }) {
     super(id);
     this.userEmail = userEmail;
     this._readOnly = readOnly ?? false;
@@ -25,6 +36,19 @@ export class Account extends BaseModel<IAccount> implements IAccount {
     }
     this._balance = balance ?? 0;
     this._excludeOnSerialize = ['send', 'receive'];
+
+    this._blockChain = new Blockchain({
+      mineLevel: _MINE_LEVEL_,
+      genesis: genesisBlock(this.userEmail)
+    });
+
+    if (chain) {
+      this._blockChain.reBuild(chain);
+    }
+  }
+
+  public get chain(): IBlock[] {
+    return [...this._blockChain.chain];
   }
 
   public get userEmail(): string {
@@ -52,6 +76,7 @@ export class Account extends BaseModel<IAccount> implements IAccount {
     mustBePositiveNumber('amount', amount);
     mustBePositiveNumber(`'The amount to send can not be greater than balance - Balance: ${this.balance} - Amount: ${amount}`, this.balance - amount);
     this._balance = this.balance - amount;
+    this._blockChain.addTransactionBlock(transaction);
   }
 
   public receive(transaction: any): void {
@@ -59,5 +84,6 @@ export class Account extends BaseModel<IAccount> implements IAccount {
     mustBeNumeric('amount', amount);
     mustBePositiveNumber('amount', amount);
     this._balance = this.balance + amount;
+    this._blockChain.addTransactionBlock(transaction);
   }
 }
