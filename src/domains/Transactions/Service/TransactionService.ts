@@ -90,7 +90,7 @@ export class TransactionService <T> extends BaseService <T, Transaction> {
         await this.mutexClient?.unlock('account', account.userEmail);
       }
 
-      throw error;
+      return Promise.reject(error);
     }
   }
 

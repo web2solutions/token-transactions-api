@@ -27,7 +27,7 @@ describe('add Account suite', () => {
       .set('Accept', 'application/json')
       .set(requestHeaderEmployee1);
     expect(response.body.userEmail).toBe(account1.userEmail);
-    expect(response.body.chain[0].data.balance).toBe(0);
+    expect(response.body.chain[0].data.balance).toBe(balance);
     expect(response.body.chain[0].data.id).toBe('_genesis_');
     expect(response.statusCode).toBe(201);
   });

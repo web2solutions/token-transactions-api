@@ -41,7 +41,6 @@ export function mustBeGreaterThanZero(field: string, value: number) {
 export function mustBePositiveNumber(field: string, value: number) {
   const error = new Error(`${field} must be a positive number`);
   error.name = _DOMAIN_VALIDATION_ERROR_NAME_;
-
   if (value < 0) throw error;
 }
 

@@ -12,6 +12,7 @@ import {
   receiveTokens,
   AccountCreateDTO
 } from '..';
+import { EIntegrity, IIntegrity } from '../ports/IIntegrity';
 
 interface IAccountServiceConfig extends IServiceConfig {
 
@@ -62,14 +63,29 @@ export class AccountService<T> extends BaseService<T, Account> {
     return account as T;
   }
 
+  public async checkAccountIntegrity(id: string): Promise<IIntegrity> {
+    const account = await getAccountById(id, this.repo);
+
+    const lastBlock = account.chain[account.chain.length - 1];
+    let status = EIntegrity.healthy;
+    if (account.balance !== lastBlock.data.balance) {
+      status = EIntegrity.risky;
+    }
+    return { status };
+  }
+
   public async getOneByUserEmail(userEmail: string): Promise<Account> {
     const account = await getAccountByUserEmail(userEmail, this.repo);
     return account;
   }
 
   public async sendTokens(account: Account, data: any): Promise<Account> {
-    const updatedAccount = await sendTokens(account, data, this.repo);
-    return updatedAccount;
+    try {
+      const updatedAccount = await sendTokens(account, data, this.repo);
+      return updatedAccount;
+    } catch (error) {
+      return Promise.reject(error);
+    }
   }
 
   public async receiveTokens(account: Account, data: any): Promise<Account> {

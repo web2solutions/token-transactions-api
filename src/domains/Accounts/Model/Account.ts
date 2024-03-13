@@ -39,7 +39,7 @@ export class Account extends BaseModel<IAccount> implements IAccount {
 
     this._blockChain = new Blockchain({
       mineLevel: _MINE_LEVEL_,
-      genesis: genesisBlock(this.userEmail)
+      genesis: genesisBlock(this.userEmail, this._balance)
     });
 
     if (chain) {

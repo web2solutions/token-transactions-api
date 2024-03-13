@@ -16,7 +16,7 @@ import {
   IBlockConfig
 } from '../port/interfaces';
 
-export const genesisBlock = (userEmail: string): IBlockConfig => {
+export const genesisBlock = (userEmail: string, balance: number): IBlockConfig => {
   return {
     position: 0,
     previousHash: '',
@@ -27,7 +27,7 @@ export const genesisBlock = (userEmail: string): IBlockConfig => {
       type: ETransactionType.receive,
       createdAt: new Date(),
       updatedAt: new Date(),
-      balance: 0
+      balance
     },
     mineLevel: _MINE_LEVEL_
   };
@@ -119,7 +119,7 @@ export class Blockchain implements IBlockchain {
     if (!Blockchain.instance) {
       Blockchain.instance = new Blockchain({
         mineLevel: _MINE_LEVEL_,
-        genesis: genesisBlock('')
+        genesis: genesisBlock('', 0)
       });
     }
     return Blockchain.instance;

@@ -48,14 +48,28 @@ Actually it has 2 Domains:
         id: string;
         userEmail: string;
         balance: number;
+        chain: IBlock[];
         createdAt: Date;
         updatedAt: Date;
+    }
+
+    interface IBlock {
+      position: number;
+      previousHash: string;
+      data: ITransactionBlock;
+      timestamp: Date;
+      hash: string;
+    }
+
+    interface ITransactionBlock extends ITransaction {
+      balance: number;
     }
 ```
 
 `Full implemented Use Cases`:
 
 - *createAccount*
+- *checkAccountIntegrity*
 - *getAllAccounts*
 - *getAccountById*
 - *sendTokens*

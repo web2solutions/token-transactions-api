@@ -22,7 +22,7 @@ describe('add Transaction suite', () => {
     await API.stop();
   });
 
-  fit('employee1 must be able to create a transaction - transaction data 1', async () => {
+  it('employee1 must be able to create a transaction - transaction data 1', async () => {
     expect.hasAssertions();
     const { userEmail } = transaction1;
     const amount = 7649;

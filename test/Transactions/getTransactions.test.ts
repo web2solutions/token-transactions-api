@@ -9,8 +9,6 @@ import {
   InMemoryDbClient
 } from '@src/infra/persistence/InMemoryDatabase/InMemoryDbClient';
 
-import transactions from '@seed/transactions';
-
 import { mutexService } from '@src/infra/mutex/adapter/MutexService';
 import {
   requestHeaderEmployee1,
