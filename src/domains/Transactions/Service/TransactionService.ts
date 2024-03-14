@@ -17,14 +17,15 @@ import {
   getTransactionById,
   getAllTransactions,
   TransactionCreateDTO,
-  ETransactionType
+  ETransactionType,
+  ITransaction
 } from '..';
 
 interface ITransactionServiceConfig extends IServiceConfig {
   mutexClient: IMutexClient;
 }
 let transactionService: any;
-export class TransactionService <T> extends BaseService <T, Transaction> {
+export class TransactionService extends BaseService <ITransaction, Transaction> {
   public repo: TransactionDataRepository;
 
   public repos: TRepos;
@@ -46,7 +47,7 @@ export class TransactionService <T> extends BaseService <T, Transaction> {
     this.mutexClient = mutexClient;
   }
 
-  public async create(data: TransactionCreateDTO): Promise <T> {
+  public async create(data: TransactionCreateDTO): Promise <ITransaction> {
     let account;
     try {
       if (
@@ -82,7 +83,7 @@ export class TransactionService <T> extends BaseService <T, Transaction> {
         await this.mutexClient?.unlock('account', account.userEmail);
       }
 
-      return transaction as T;
+      return transaction as ITransaction;
     } catch (error) {
       // console.log(error)
       if (account) {
@@ -95,7 +96,7 @@ export class TransactionService <T> extends BaseService <T, Transaction> {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  public async update(id: string, data: T): Promise <T> {
+  public async update(id: string, data: ITransaction): Promise <ITransaction> {
     return Promise.resolve(data);
   }
 
@@ -159,14 +160,14 @@ export class TransactionService <T> extends BaseService <T, Transaction> {
     }
   }
 
-  public async getOneById(id: string): Promise <T> {
+  public async getOneById(id: string): Promise <ITransaction> {
     const transaction = await getTransactionById(id, this.repo);
-    return transaction as T;
+    return transaction as ITransaction;
   }
 
-  public async getAll(): Promise < T[] > {
+  public async getAll(): Promise < ITransaction[] > {
     const transactions = await getAllTransactions(this.repo);
-    return transactions as T[];
+    return transactions as ITransaction[];
   }
 
   public static compile(config: ITransactionServiceConfig) {

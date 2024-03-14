@@ -10,7 +10,8 @@ import {
   getAccountByUserEmail,
   sendTokens,
   receiveTokens,
-  AccountCreateDTO
+  AccountCreateDTO,
+  IAccount
 } from '..';
 import { EIntegrity, IIntegrity } from '../ports/IIntegrity';
 
@@ -18,7 +19,7 @@ interface IAccountServiceConfig extends IServiceConfig {
 
 }
 let accountService: any;
-export class AccountService<T> extends BaseService<T, Account> {
+export class AccountService extends BaseService<IAccount, Account> {
   private repo: AccountDataRepository;
 
   public repos: TRepos;
@@ -30,13 +31,13 @@ export class AccountService<T> extends BaseService<T, Account> {
     this.repo = this.repos.AccountDataRepository as AccountDataRepository;
   }
 
-  public async create(data: AccountCreateDTO): Promise<T> {
+  public async create(data: AccountCreateDTO): Promise<IAccount> {
     const document = await createAccount((data ?? {}), this.repo);
-    return document as T;
+    return document as IAccount;
   }
 
   // eslint-disable-next-line class-methods-use-this
-  public async update(id: string, data: T): Promise<T> {
+  public async update(id: string, data: IAccount): Promise<IAccount> {
     return Promise.resolve(data);
   }
 
@@ -58,9 +59,9 @@ export class AccountService<T> extends BaseService<T, Account> {
     return deleted;
   }
 
-  public async getOneById(id: string): Promise<T> {
+  public async getOneById(id: string): Promise<IAccount> {
     const account = await getAccountById(id, this.repo);
-    return account as T;
+    return account as IAccount;
   }
 
   public async checkAccountIntegrity(id: string): Promise<IIntegrity> {
@@ -93,9 +94,9 @@ export class AccountService<T> extends BaseService<T, Account> {
     return updatedAccount;
   }
 
-  public async getAll(): Promise<T[]> {
+  public async getAll(): Promise<IAccount[]> {
     const accounts = await getAllAccounts(this.repo);
-    return accounts as T[];
+    return accounts as IAccount[];
   }
 
   public static compile(config: IAccountServiceConfig) {
