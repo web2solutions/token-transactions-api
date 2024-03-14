@@ -28,7 +28,7 @@ const getTransaction = ({
           validateRequestParams(endPointConfig, req.params);
 
           const transactionId = req.params.id;
-          const service = TransactionService.create({
+          const service = TransactionService.compile({
             repos: {
               TransactionDataRepository: TransactionDataRepository.compile({ dbClient })
             },

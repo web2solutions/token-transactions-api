@@ -24,7 +24,7 @@ const getTransactions = ({
       (async () => {
         try {
           isUserAccessGranted(((req as any).profile ?? {}), endPointConfig);
-          const service = TransactionService.create({
+          const service = TransactionService.compile({
             repos: {
               TransactionDataRepository: TransactionDataRepository.compile({ dbClient })
             },

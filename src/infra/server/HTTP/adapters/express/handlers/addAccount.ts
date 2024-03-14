@@ -21,7 +21,7 @@ const addAccount = ({ dbClient, endPointConfig, spec }: IHandlerFactory): IbaseH
         try {
           isUserAccessGranted(((req as any).profile ?? {}), endPointConfig);
           validateRequestBody(spec, endPointConfig, req.body);
-          const service = AccountService.create({
+          const service = AccountService.compile({
             repos: {
               AccountDataRepository: AccountDataRepository.compile({ dbClient })
             }

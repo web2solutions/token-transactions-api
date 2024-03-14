@@ -169,7 +169,7 @@ export class TransactionService <T> extends BaseService <T, Transaction> {
     return transactions as T[];
   }
 
-  public static create(config: ITransactionServiceConfig) {
+  public static compile(config: ITransactionServiceConfig) {
     if (transactionService) {
       const {
         repos,

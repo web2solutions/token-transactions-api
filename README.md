@@ -274,9 +274,10 @@ Commit messages must follow the [Commitizen conventional changelog](https://comm
 ```
 
 2. Create a `Dead-Letter` queue for transactions rejected when the resource is locked by the mutex
-3. Implement a ServerSentEvent (EventSource) to notify the client about the execution of the items from the `Dead-Leter` queue.
+3. Implement a ServerSentEvent (EventSource) to notify the client about the execution of the items from the `Dead-Letter` queue.
 4. Implement dbClient for Mongoose
 5. Implement dbClient for Sequelize
 6. Implement dbClient from DynamoDB
 7. Implement WebServer for Hyper-Express
 8. Unit testing - test suite
+9. Add filtering and paging to getAll records methods.

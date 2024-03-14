@@ -149,7 +149,7 @@ export class RestAPI {
 
   public async seedAccounts(): Promise<void> {
     const repo = AccountDataRepository.compile({ dbClient: this.#_dbClient });
-    const service = AccountService.create({
+    const service = AccountService.compile({
       repos: {
         AccountDataRepository: repo
       }
@@ -175,12 +175,12 @@ export class RestAPI {
     const accountRepo = AccountDataRepository.compile({ dbClient: this.#_dbClient });
     const transactionRepo = TransactionDataRepository.compile({ dbClient: this.#_dbClient });
 
-    const accountService = AccountService.create({
+    const accountService = AccountService.compile({
       repos: {
         AccountDataRepository: accountRepo
       }
     });
-    const transactionService = TransactionService.create({
+    const transactionService = TransactionService.compile({
       repos: {
         TransactionDataRepository: transactionRepo
       },

@@ -33,13 +33,13 @@ const addTransaction = ({
           isUserAccessGranted(((req as any).profile ?? {}), endPointConfig);
           validateRequestBody(spec, endPointConfig, req.body);
 
-          const accountService = AccountService.create({
+          const accountService = AccountService.compile({
             repos: {
               AccountDataRepository: AccountDataRepository.compile({ dbClient })
             }
           });
 
-          const service = TransactionService.create({
+          const service = TransactionService.compile({
             repos: {
               TransactionDataRepository: TransactionDataRepository.compile({ dbClient })
             },

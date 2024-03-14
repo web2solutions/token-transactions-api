@@ -1,3 +1,4 @@
+import { IStore } from '@src/domains/ports/persistence/IStore';
 import { BaseRepo } from '@src/domains/ports/persistence/BaseRepo';
 import { IRepoConfig } from '@src/domains/ports/persistence/IRepoConfig';
 import { throwIfNotFound } from '@src/domains/validators';
@@ -6,7 +7,7 @@ import { IAccount, Account } from '..';
 let accountDataRepository: any;
 
 export class AccountDataRepository extends BaseRepo<Account> {
-  public store;
+  public store: IStore<IAccount>;
 
   public limit: number;
 
@@ -16,7 +17,7 @@ export class AccountDataRepository extends BaseRepo<Account> {
     const { limit } = config;
     // this.dbClient = dbClient;
     // points to a collection or table
-    this.store = this.dbClient.stores.Account;
+    this.store = this.dbClient.stores.Account as IStore<IAccount>;
     this.limit = limit ?? 30;
   }
 

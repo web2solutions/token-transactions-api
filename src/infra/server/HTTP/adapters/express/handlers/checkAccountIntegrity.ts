@@ -24,7 +24,7 @@ const checkAccountIntegrity = ({ dbClient, endPointConfig }: IHandlerFactory): I
           validateRequestParams(endPointConfig, req.params);
 
           const accountId = req.params.id;
-          const service = AccountService.create({
+          const service = AccountService.compile({
             repos: {
               AccountDataRepository: AccountDataRepository.compile({ dbClient })
             }

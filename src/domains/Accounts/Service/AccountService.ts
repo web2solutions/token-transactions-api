@@ -98,7 +98,7 @@ export class AccountService<T> extends BaseService<T, Account> {
     return accounts as T[];
   }
 
-  public static create(config: IAccountServiceConfig) {
+  public static compile(config: IAccountServiceConfig) {
     if (accountService) return accountService;
     accountService = new AccountService(config);
     return accountService;

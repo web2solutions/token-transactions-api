@@ -19,7 +19,7 @@ const getAccounts = ({ dbClient, endPointConfig }: IHandlerFactory): IbaseHandle
       (async () => {
         try {
           isUserAccessGranted(((req as any).profile ?? {}), endPointConfig);
-          const service = AccountService.create({
+          const service = AccountService.compile({
             repos: {
               AccountDataRepository: AccountDataRepository.compile({ dbClient })
             }

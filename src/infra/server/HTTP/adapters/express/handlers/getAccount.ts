@@ -23,7 +23,7 @@ const getAccount = ({ dbClient, endPointConfig }: IHandlerFactory): IbaseHandler
           validateRequestParams(endPointConfig, req.params);
 
           const accountId = req.params.id;
-          const service = AccountService.create({
+          const service = AccountService.compile({
             repos: {
               AccountDataRepository: AccountDataRepository.compile({ dbClient })
             }

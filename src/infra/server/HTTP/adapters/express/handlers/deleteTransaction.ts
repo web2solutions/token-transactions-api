@@ -30,13 +30,13 @@ const deleteTransaction = ({
           validateRequestParams(endPointConfig, req.params);
 
           const transactionId = req.params.id;
-          const accountService = AccountService.create({
+          const accountService = AccountService.compile({
             repos: {
               AccountDataRepository: AccountDataRepository.compile({ dbClient })
             }
           });
 
-          const service = TransactionService.create({
+          const service = TransactionService.compile({
             repos: {
               TransactionDataRepository: TransactionDataRepository.compile({ dbClient })
             },
