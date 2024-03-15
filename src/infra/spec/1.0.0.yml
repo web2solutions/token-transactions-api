@@ -13,7 +13,7 @@ externalDocs:
   description: Find out more about Ledn
   url: http://ledn.io
 servers:
-  - url: http://localhost:3000
+  - url: http://localhost:3000/api/1.0.0
 tags:
   - name: account
     description: Everything about your Accounts
