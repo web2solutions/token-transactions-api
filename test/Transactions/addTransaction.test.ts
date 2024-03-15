@@ -58,6 +58,7 @@ describe('add Transaction suite', () => {
     // console.log(responseGetAccount.body.chain)
     expect(responseGetAccount.statusCode).toBe(200);
     expect(responseGetAccount.body.chain[1].data.balance).toBe(amount);
+    expect(responseGetAccount.body.chain[1].data.amount).toBe(amount);
   });
 
   it('employee1 must be able to create a transaction with amount equal 0 - transaction data 2', async () => {
