@@ -23,7 +23,7 @@ export const genesisBlock = (userEmail: string, balance: number): IBlockConfig =
     data: {
       id: '_genesis_',
       userEmail,
-      amount: 0,
+      amount: balance,
       type: ETransactionType.receive,
       createdAt: new Date(),
       updatedAt: new Date(),
