@@ -257,7 +257,9 @@ It will run `lint` and `test` before asking info about the commit
 
 `Commiting code`
 
-Commit messages must follow the [Commitizen conventional changelog](https://commitizen-tools.github.io/commitizen/changelog/)
+Commit messages must follow the [Angular Commit Message Guidelines](https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelines)
+
+It generates a changelog following the [Commitizen conventional changelog](https://commitizen-tools.github.io/commitizen/changelog/)
 
 
 ## Technical Debits
