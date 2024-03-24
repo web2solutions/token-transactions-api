@@ -1,6 +1,7 @@
 /* global  describe, it, expect */
 import request from 'supertest';
-
+import { Express } from 'express';
+import { ExpressServer } from '@src/infra/server/HTTP/adapters/express/ExpressServer';
 import { RestAPI } from '@src/infra/RestAPI';
 import { InMemoryDbClient } from '@src/infra/persistence/InMemoryDatabase/InMemoryDbClient';
 import { mutexService } from '@src/infra/mutex/adapter/MutexService';
@@ -13,9 +14,11 @@ import {
   transaction1,
   transaction2,
   transaction3
-} from '../mock';
+} from '../../../mock';
 
-const API = new RestAPI(InMemoryDbClient, mutexService);
+const webServer = ExpressServer.compile();
+const API = new RestAPI<Express>(InMemoryDbClient, webServer, mutexService);
+const server = API.server.application;
 
 describe('add Transaction suite', () => {
   afterAll(async () => {
@@ -28,7 +31,7 @@ describe('add Transaction suite', () => {
     const amount = 7649;
     const type = 'receive';
 
-    const createdAccountResponse = await request(API.server.application)
+    const createdAccountResponse = await request(server)
       .post('/api/1.0.0/accounts')
       .send({
         userEmail,
@@ -40,7 +43,7 @@ describe('add Transaction suite', () => {
     // console.log(createdAccountResponse.body);
     const createdAccount = createdAccountResponse.body;
 
-    const response = await request(API.server.application)
+    const response = await request(server)
       .post('/api/1.0.0/transactions')
       .send({ userEmail, amount, type })
       .set('Content-Type', 'application/json')
@@ -50,7 +53,7 @@ describe('add Transaction suite', () => {
     expect(response.body.userEmail).toBe(transaction1.userEmail);
     expect(response.statusCode).toBe(201);
 
-    const responseGetAccount = await request(API.server.application)
+    const responseGetAccount = await request(server)
       .get(`/api/1.0.0/accounts/${createdAccount.id}`)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
@@ -65,7 +68,7 @@ describe('add Transaction suite', () => {
     expect.hasAssertions();
     const { userEmail, type } = transaction2;
 
-    await request(API.server.application)
+    await request(server)
       .post('/api/1.0.0/accounts')
       .send({
         userEmail,
@@ -75,7 +78,7 @@ describe('add Transaction suite', () => {
       .set('Accept', 'application/json')
       .set(requestHeaderEmployee1);
 
-    const response = await request(API.server.application)
+    const response = await request(server)
       .post('/api/1.0.0/transactions')
       .send({ userEmail, amount: 0, type })
       .set('Content-Type', 'application/json')
@@ -89,7 +92,7 @@ describe('add Transaction suite', () => {
   it('employee1 must not be able to create a transaction with amount less than 0 - transaction data 1', async () => {
     expect.hasAssertions();
     const { userEmail, type } = transaction3;
-    await request(API.server.application)
+    await request(server)
       .post('/api/1.0.0/accounts')
       .send({
         userEmail,
@@ -98,7 +101,7 @@ describe('add Transaction suite', () => {
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .set(requestHeaderEmployee1);
-    const response = await request(API.server.application)
+    const response = await request(server)
       .post('/api/1.0.0/transactions')
       .send({ userEmail, amount: -1, type })
       .set('Content-Type', 'application/json')
@@ -111,7 +114,7 @@ describe('add Transaction suite', () => {
 
   it('employee1 must not be able to create new transaction with unknown field', async () => {
     expect.hasAssertions();
-    const response = await request(API.server.application)
+    const response = await request(server)
       .post('/api/1.0.0/transactions')
       .send({
         invalidFieldName: 50
@@ -126,7 +129,7 @@ describe('add Transaction suite', () => {
 
   it('employee1 must not be able to create new transaction with empty payload', async () => {
     expect.hasAssertions();
-    const response = await request(API.server.application)
+    const response = await request(server)
       .post('/api/1.0.0/transactions')
       .send({})
       .set('Content-Type', 'application/json')
@@ -139,7 +142,7 @@ describe('add Transaction suite', () => {
   it('employee2 must not be able to create new transaction - Forbidden: the role create_transaction is required', async () => {
     expect.hasAssertions();
     const { userEmail, amount, type } = transaction1;
-    const response = await request(API.server.application)
+    const response = await request(server)
       .post('/api/1.0.0/transactions')
       .send({ userEmail, amount, type })
       .set('Content-Type', 'application/json')
@@ -154,7 +157,7 @@ describe('add Transaction suite', () => {
   it('employee3 must not be able to create new transaction - Forbidden: the role create_transaction is required', async () => {
     expect.hasAssertions();
     const { userEmail, amount, type } = transaction2;
-    const response = await request(API.server.application)
+    const response = await request(server)
       .post('/api/1.0.0/transactions')
       .send({ userEmail, amount, type })
       .set('Content-Type', 'application/json')
@@ -169,7 +172,7 @@ describe('add Transaction suite', () => {
   it('employee4 must not be able to create new transaction - Forbidden: the role create_transaction is required', async () => {
     expect.hasAssertions();
     const { userEmail, amount, type } = transaction3;
-    const response = await request(API.server.application)
+    const response = await request(server)
       .post('/api/1.0.0/transactions')
       .send({ userEmail, amount, type })
       .set('Content-Type', 'application/json')
@@ -183,7 +186,7 @@ describe('add Transaction suite', () => {
   it('guest must not be able to create new transaction - Unauthorized', async () => {
     expect.hasAssertions();
     const { userEmail, amount, type } = transaction1;
-    const response = await request(API.server.application)
+    const response = await request(server)
       .post('/api/1.0.0/transactions')
       .send({ userEmail, amount, type })
       .set('Content-Type', 'application/json')

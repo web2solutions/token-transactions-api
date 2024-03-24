@@ -3,32 +3,31 @@
 
 import fs from 'fs';
 import YAML from 'yaml';
-import express from 'express';
 import { OpenAPIV3 } from 'openapi-types';
 
-import { IHTTPServer } from '@src/infra/server/HTTP/ports/IHTTPServer';
-import { ExpressServer } from '@src/infra/server/HTTP/adapters/express/ExpressServer';
-import localhostGetHandlerFactory from '@src/infra/server/HTTP/adapters/express/handlers/localhost.get';
-import apiVersionsGetHandlerFactory from '@src/infra/server/HTTP/adapters/express/handlers/apiversions.get';
+import { replaceVars } from '@src/infra/utils';
 
+import { HTTPBaseServer } from '@src/infra/server/HTTP/ports/HTTPBaseServer';
 import { IDbClient } from '@src/infra/persistence/port/IDbClient';
 import { IMutexClient } from '@src/infra/mutex/port/IMutexClient';
+
+import localhostGetHandlerFactory from '@src/infra/server/HTTP/adapters/express/handlers/localhost.get';
+import apiVersionsGetHandlerFactory from '@src/infra/server/HTTP/adapters/express/handlers/apiversions.get';
+import apiDocGetHandlerFactory from '@src/infra/server/HTTP/adapters/express/handlers/apiDocGetHandlerFactory';
 
 import { AccountService, AccountDataRepository } from '@src/domains/Accounts';
 import { TransactionService, TransactionDataRepository } from '@src/domains/Transactions';
 
-import { replaceVars } from '@src/infra/utils';
-
 import transactions from '@seed/transactions';
 import accounts from '@seed/accounts';
-import { _DOCS_PREFIX_, _API_PREFIX_ } from './config/constants';
+import { /* _DOCS_PREFIX_, */ _API_PREFIX_ } from './config/constants';
 
-export class RestAPI {
+export class RestAPI<T> {
   #_oas: Map<string, OpenAPIV3.Document> = new Map();
 
   #_started: boolean = false;
 
-  #_server: IHTTPServer;
+  #_server: HTTPBaseServer<T>;
 
   #_dbClient: IDbClient;
 
@@ -36,9 +35,10 @@ export class RestAPI {
 
   constructor(
     dbClient: IDbClient,
-    mutexClient?: any
+    HttpServerAdapter: HTTPBaseServer<T>,
+    mutexClient?: IMutexClient
   ) {
-    this.#_server = new ExpressServer();
+    this.#_server = HttpServerAdapter;
 
     this.#_dbClient = dbClient;
 
@@ -57,9 +57,13 @@ export class RestAPI {
     this.#_server.endPointRegister(apiVersionsGet);
 
     process.on('exit', () => {
-      if (this.#_mutexClient) {
-        this.#_mutexClient.disconnect();
-      }
+      this.stop();
+    });
+
+    process.on('unhandledRejection', (e) => {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      process.exit(1);
     });
   }
 
@@ -79,51 +83,40 @@ export class RestAPI {
       const jsonOAS: OpenAPIV3.Document = YAML.parse(file);
       this.#_oas.set(jsonOAS.info.version, jsonOAS);
     }
-    this.#_buildDocEndPoints();
     this.#_buildEndPoints();
+    this.#_buildDocEndPoints();
     // console.timeEnd('Load spec files');
   }
 
   #_buildEndPoints() {
     for (const [version, spec] of this.#_oas) {
-      // console.log([version, spec]);
-      const routerVersion = express.Router();
-      // console.log(spec.paths);
       for (const path of Object.keys(spec.paths)) {
         const endPointConfigs: Record<string, any> = spec.paths[path] ?? {};
         const methods: string[] = Object.keys(endPointConfigs);
         for (const method of methods) {
           const endPointConfig: Record<string, any> = endPointConfigs[method];
-
-          const authName = Object.keys(endPointConfig.security[0])[0];
-
           const handlerFactory = require(`@src/infra/server/HTTP/adapters/express/handlers/${endPointConfig.operationId}`).default({
             dbClient: this.#_dbClient,
             mutexClient: this.#_mutexClient,
             endPointConfig,
             spec
           });
-          const authMiddleware = require(`@src/infra/server/HTTP/adapters/express/auth/${authName}`).default;
-          // console.log(replaceVars(path), method);
-          // console.log(endPointConfig.operationId);
-          (routerVersion as any)[method](`${replaceVars(path)}`, authMiddleware, handlerFactory.handler);
+          this.#_server.endPointRegister({
+            ...handlerFactory,
+            path: `${_API_PREFIX_}/${version}${replaceVars(handlerFactory.path)}`
+          });
         }
       }
-      this.#_server.application.use(`${_API_PREFIX_}/${version}`, routerVersion);
     }
   }
 
   #_buildDocEndPoints() {
-    const routerDocs = express.Router();
     for (const [version, spec] of this.#_oas) {
-      routerDocs.get(`/${version}`, (req, res) => {
-        res.json(spec);
-      });
+      this.#_server.endPointRegister(apiDocGetHandlerFactory(spec, version));
     }
-    this.#_server.application.use(_DOCS_PREFIX_, routerDocs);
   }
 
-  public get server(): IHTTPServer {
+  public get server(): HTTPBaseServer<T> {
     return this.#_server;
   }
 
@@ -138,7 +131,9 @@ export class RestAPI {
     // quit db
     // quit all
     await this.#_dbClient.disconnect();
-    await this.#_mutexClient?.disconnect();
+    if (this.#_mutexClient) {
+      await this.#_mutexClient.disconnect();
+    }
     // process.exit(0);
   }
 

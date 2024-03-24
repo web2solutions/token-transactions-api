@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* global  describe, it, expect */
 import request from 'supertest';
-
+import { Express } from 'express';
+import { ExpressServer } from '@src/infra/server/HTTP/adapters/express/ExpressServer';
 import {
   RestAPI
 } from '@src/infra/RestAPI';
@@ -18,9 +19,11 @@ import {
   // requestHeaderEmployee3,
   // requestHeaderEmployee4,
   // requestHeaderGuest,
-} from './mock';
+} from '@test/mock';
 
-const API = new RestAPI(InMemoryDbClient, mutexService);
+const webServer = ExpressServer.compile();
+const API = new RestAPI<Express>(InMemoryDbClient, webServer, mutexService);
+const server = API.server.application;
 
 describe('seed data suite', () => {
   beforeAll(async () => {
@@ -40,7 +43,7 @@ describe('seed data suite', () => {
 
   it('data must match', async () => {
     expect.hasAssertions();
-    const response = await request(API.server.application)
+    const response = await request(server)
       .get('/api/1.0.0/accounts')
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')

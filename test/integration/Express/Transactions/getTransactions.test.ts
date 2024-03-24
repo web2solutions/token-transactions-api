@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* global  describe, it, expect */
 import request from 'supertest';
-
+import { Express } from 'express';
+import { ExpressServer } from '@src/infra/server/HTTP/adapters/express/ExpressServer';
 import {
   RestAPI
 } from '@src/infra/RestAPI';
@@ -16,9 +17,11 @@ import {
   requestHeaderEmployee3,
   requestHeaderEmployee4,
   requestHeaderGuest
-} from '../mock';
+} from '../../../mock';
 
-const API = new RestAPI(InMemoryDbClient, mutexService);
+const webServer = ExpressServer.compile();
+const API = new RestAPI(InMemoryDbClient, webServer, mutexService);
+const server = API.server.application as Express;
 
 describe('get Transactions suite', () => {
   beforeAll(async () => {
@@ -37,7 +40,7 @@ describe('get Transactions suite', () => {
 
   it('employee1 must be able to read all transactions', async () => {
     expect.hasAssertions();
-    const response = await request(API.server.application)
+    const response = await request(server)
       .get('/api/1.0.0/transactions')
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
@@ -50,7 +53,7 @@ describe('get Transactions suite', () => {
 
   it('employee2 must be able to read all transactions', async () => {
     expect.hasAssertions();
-    const response = await request(API.server.application)
+    const response = await request(server)
       .get('/api/1.0.0/transactions')
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
@@ -63,7 +66,7 @@ describe('get Transactions suite', () => {
 
   it('employee3 must be able to read all transactions', async () => {
     expect.hasAssertions();
-    const response = await request(API.server.application)
+    const response = await request(server)
       .get('/api/1.0.0/transactions')
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
@@ -76,7 +79,7 @@ describe('get Transactions suite', () => {
 
   it('employee4 must not be able to read all transactions - Forbidden: view_transaction role required', async () => {
     expect.hasAssertions();
-    const response = await request(API.server.application)
+    const response = await request(server)
       .get('/api/1.0.0/transactions')
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
@@ -88,7 +91,7 @@ describe('get Transactions suite', () => {
 
   it('guest must not be able to read an transaction data - Unauthorized', async () => {
     expect.hasAssertions();
-    const response = await request(API.server.application)
+    const response = await request(server)
       .get('/api/1.0.0/transactions')
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')

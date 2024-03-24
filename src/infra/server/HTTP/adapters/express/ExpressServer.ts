@@ -1,14 +1,15 @@
 import express, { Express } from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import { IbaseHandler } from './ports/IbaseHandler';
-import { IHTTPServer } from '../../ports/IHTTPServer';
+import { IbaseHandler } from '@src/infra/server/HTTP/ports/IbaseHandler';
+import { HTTPBaseServer } from '@src/infra/server/HTTP/ports/HTTPBaseServer';
 
-class ExpressServer implements IHTTPServer {
+let expressServer: any;
+class ExpressServer extends HTTPBaseServer<Express> {
   private _application: Express;
 
-  // private _router: Router = express.Router();
-  constructor() {
+  private constructor() {
+    super();
     this._application = express();
     this._application.use(cors());
     this._application.use(bodyParser.json({ limit: '100mb' }));
@@ -20,11 +21,8 @@ class ExpressServer implements IHTTPServer {
     return this._application;
   }
 
-  // get router (): Router {
-  //     return this._router;
-  // }
-
   public endPointRegister(handlerFactory: IbaseHandler): void {
+    // console.log(handlerFactory);
     try {
       if (handlerFactory.securitySchemes) {
         (this._application as any)[handlerFactory.method](
@@ -63,6 +61,12 @@ class ExpressServer implements IHTTPServer {
   public stop() {
     //     this._application.
     process.exit(0);
+  }
+
+  public static compile() {
+    if (expressServer) return expressServer;
+    expressServer = new ExpressServer();
+    return expressServer;
   }
 }
 

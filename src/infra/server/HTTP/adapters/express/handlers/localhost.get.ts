@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { IbaseHandler } from '../ports/IbaseHandler';
+import { IbaseHandler } from '@src/infra/server/HTTP/ports/IbaseHandler';
 import basicAuth from '../auth/basicAuth';
 
 const localhostGetHandlerFactory = (): IbaseHandler => {

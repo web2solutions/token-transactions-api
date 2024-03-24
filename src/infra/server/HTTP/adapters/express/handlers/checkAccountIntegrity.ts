@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
-import { IHandlerFactory } from '@src/infra/server/HTTP/adapters/express/ports/IHandlerFactory';
-import { IbaseHandler } from '@src/infra/server/HTTP/adapters/express/ports/IbaseHandler';
+import { IHandlerFactory } from '@src/infra/server/HTTP/ports/IHandlerFactory';
+import { IbaseHandler } from '@src/infra/server/HTTP/ports/IbaseHandler';
 import basicAuth from '@src/infra/server/HTTP/adapters/express/auth/basicAuth';
 import {
   isUserAccessGranted,
@@ -13,8 +13,9 @@ import { AccountDataRepository, AccountService } from '@src/domains/Accounts';
 import { IIntegrity } from '@src/domains/Accounts/ports/IIntegrity';
 
 const checkAccountIntegrity = ({ dbClient, endPointConfig }: IHandlerFactory): IbaseHandler => {
+  // console.log('endPointConfig>>>>>>>>>>> XXXXXX', endPointConfig);
   return {
-    path: '/accounts/{id}',
+    path: '/accounts/{id}/checkIntegrity',
     method: 'get',
     securitySchemes: basicAuth,
     handler(req: Request, res: Response) {

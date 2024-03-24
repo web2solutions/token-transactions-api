@@ -1,12 +1,9 @@
-import { Express } from 'express';
-import { IbaseHandler } from '../adapters/express/ports/IbaseHandler';
+import { IbaseHandler } from './IbaseHandler';
 
-type HTTPServerTypes = Express;
-
-export interface IHTTPServer {
-    // _application: HTTPServerTypes;
-    endPointRegister (handlerFactory: IbaseHandler): void
-    application: HTTPServerTypes;
-    start(): void;
-    stop(): void;
+export interface IHTTPServer<T> {
+  // _application: HTTPServerTypes;
+  endPointRegister (handlerFactory: IbaseHandler): void;
+  application: T;
+  start(): void;
+  stop(): void;
 }

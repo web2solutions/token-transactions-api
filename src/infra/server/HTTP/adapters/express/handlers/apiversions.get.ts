@@ -1,13 +1,12 @@
 import { Request, Response } from 'express';
 import { OpenAPIV3 } from 'openapi-types';
-import { _DOCS_PREFIX_ } from '../../../../../config/constants';
-import { IbaseHandler } from '../ports/IbaseHandler';
+import { _DOCS_PREFIX_ } from '@src/infra/config/constants';
+import { IbaseHandler } from '@src/infra/server/HTTP/ports/IbaseHandler';
 
 const apiVersionsGetHandlerFactory = (apiDocs: Map<string, OpenAPIV3.Document>): IbaseHandler => {
   return {
     path: '/versions',
     method: 'get',
-    // securitySchemes: basicAuth,
     handler(req: Request, res: Response): void {
       const versions: Record<string, string> = {};
       for (const [version] of apiDocs) {

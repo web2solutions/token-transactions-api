@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
-import { IHandlerFactory } from '@src/infra/server/HTTP/adapters/express/ports/IHandlerFactory';
-import { IbaseHandler } from '@src/infra/server/HTTP/adapters/express/ports/IbaseHandler';
+import { IHandlerFactory } from '@src/infra/server/HTTP/ports/IHandlerFactory';
+import { IbaseHandler } from '@src/infra/server/HTTP/ports/IbaseHandler';
 import basicAuth from '@src/infra/server/HTTP/adapters/express/auth/basicAuth';
 import {
   isUserAccessGranted,

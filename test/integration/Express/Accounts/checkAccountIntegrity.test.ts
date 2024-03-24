@@ -1,6 +1,7 @@
 /* global  describe, it, expect */
 import request from 'supertest';
-
+import { Express } from 'express';
+import { ExpressServer } from '@src/infra/server/HTTP/adapters/express/ExpressServer';
 import {
   InMemoryDbClient
 } from '@src/infra/persistence/InMemoryDatabase/InMemoryDbClient';
@@ -17,9 +18,11 @@ import {
   // requestHeaderEmployee3,
   requestHeaderEmployee4,
   requestHeaderGuest
-} from '../mock';
+} from '../../../mock';
 
-const API = new RestAPI(InMemoryDbClient);
+const webServer = ExpressServer.compile();
+const API = new RestAPI<Express>(InMemoryDbClient, webServer);
+const server = API.server.application;
 
 describe('checkAccountIntegrity suite', () => {
   let createdAccount: IAccount;
@@ -31,14 +34,14 @@ describe('checkAccountIntegrity suite', () => {
 
   it('account integrity status must be healthy', async () => {
     expect.hasAssertions();
-    const { body } = await request(API.server.application)
+    const { body } = await request(server)
       .get('/api/1.0.0/accounts')
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .set(requestHeaderEmployee1);
     [createdAccount] = body;
 
-    const response = await request(API.server.application)
+    const response = await request(server)
       .get(`/api/1.0.0/accounts/${createdAccount.id}/checkIntegrity`)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
@@ -52,7 +55,7 @@ describe('checkAccountIntegrity suite', () => {
 
   it('employee4 must not be able to check account integrity - Forbidden: view_account role required', async () => {
     expect.hasAssertions();
-    const response = await request(API.server.application)
+    const response = await request(server)
       .get(`/api/1.0.0/accounts/${createdAccount.id}`)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
@@ -64,7 +67,7 @@ describe('checkAccountIntegrity suite', () => {
 
   it('guest must not be able to check account integrity - Unauthorized', async () => {
     expect.hasAssertions();
-    const response = await request(API.server.application)
+    const response = await request(server)
       .get(`/api/1.0.0/accounts/${createdAccount.id}`)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
