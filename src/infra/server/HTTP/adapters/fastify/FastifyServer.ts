@@ -5,18 +5,19 @@ import fastifyStatic from '@fastify/static';
 import formBody from '@fastify/formbody';
 import path from 'node:path';
 
-import { IbaseHandler } from '../@src/infra/server/HTTP/ports/IbaseHandler';
-import { IHTTPServer } from '../../ports/IHTTPServer';
+import { IbaseHandler } from '@src/infra/server/HTTP/ports/IbaseHandler';
+import { HTTPBaseServer } from '@src/infra/server/HTTP/ports/HTTPBaseServer';
 
 const fastifyApp = fastify();
 type Fastify = typeof fastifyApp;
 
 // hyper-express
 
-class FastifyServer implements IHTTPServer {
+class FastifyServer extends HTTPBaseServer<Fastify> {
   private _application: Fastify;
 
   constructor() {
+    super();
     this._application = fastifyApp;
     this._application.register(cors, {});
     this._application.register(helmet);

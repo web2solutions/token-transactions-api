@@ -20,7 +20,7 @@ import { TransactionService, TransactionDataRepository } from '@src/domains/Tran
 
 import transactions from '@seed/transactions';
 import accounts from '@seed/accounts';
-import { /* _DOCS_PREFIX_, */ _API_PREFIX_ } from './config/constants';
+import { _API_PREFIX_, _DOCS_PREFIX_ } from './config/constants';
 
 export class RestAPI<T> {
   #_oas: Map<string, OpenAPIV3.Document> = new Map();
@@ -88,7 +88,7 @@ export class RestAPI<T> {
     // console.timeEnd('Load spec files');
   }
 
-  #_buildEndPoints() {
+  #_buildEndPoints(): void {
     for (const [version, spec] of this.#_oas) {
       for (const path of Object.keys(spec.paths)) {
         const endPointConfigs: Record<string, any> = spec.paths[path] ?? {};
@@ -110,9 +110,12 @@ export class RestAPI<T> {
     }
   }
 
-  #_buildDocEndPoints() {
+  #_buildDocEndPoints(): void {
     for (const [version, spec] of this.#_oas) {
-      this.#_server.endPointRegister(apiDocGetHandlerFactory(spec, version));
+      this.#_server.endPointRegister({
+        ...apiDocGetHandlerFactory(spec, version),
+        path: `${_DOCS_PREFIX_}/${version}`
+      });
     }
   }
 

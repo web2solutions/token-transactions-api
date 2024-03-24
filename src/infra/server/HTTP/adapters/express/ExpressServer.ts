@@ -22,7 +22,6 @@ class ExpressServer extends HTTPBaseServer<Express> {
   }
 
   public endPointRegister(handlerFactory: IbaseHandler): void {
-    // console.log(handlerFactory);
     try {
       if (handlerFactory.securitySchemes) {
         (this._application as any)[handlerFactory.method](
