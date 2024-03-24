@@ -67,23 +67,23 @@ export class TransactionService extends BaseService <ITransaction, Transaction> 
           if (lockAccountUserEmail && lockAccountUserEmail.result?.wasAlreadyLocked) {
             throw new Error('account locked');
           }
+
+          const transaction = await createTransaction(data, this.repo);
+
+          if (data.type === ETransactionType.send) {
+            account = await this.services.AccountService.sendTokens(account, data);
+          } else if (data.type === ETransactionType.receive) {
+            account = await this.services.AccountService.receiveTokens(account, data);
+          }
+
+          await this.mutexClient?.unlock('account', account.id);
+          await this.mutexClient?.unlock('account', account.userEmail);
+
+          return transaction as ITransaction;
         }
-
-        if (data.type === ETransactionType.send) {
-          account = await this.services.AccountService.sendTokens(account, data);
-        } else if (data.type === ETransactionType.receive) {
-          account = await this.services.AccountService.receiveTokens(account, data);
-        }
+        throw new Error('not found');
       }
-
-      const transaction = await createTransaction(data, this.repo);
-
-      if (account) {
-        await this.mutexClient?.unlock('account', account.id);
-        await this.mutexClient?.unlock('account', account.userEmail);
-      }
-
-      return transaction as ITransaction;
+      throw new Error('not implemented');
     } catch (error) {
       // console.log(error)
       if (account) {

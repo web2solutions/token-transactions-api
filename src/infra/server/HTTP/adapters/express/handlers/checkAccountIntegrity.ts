@@ -16,7 +16,6 @@ import { IIntegrity } from '@src/domains/Accounts/ports/IIntegrity';
 const checkAccountIntegrity: EndPointFactory = (
   { dbClient, endPointConfig }: IHandlerFactory
 ): IbaseHandler => {
-  // console.log('endPointConfig>>>>>>>>>>> XXXXXX', endPointConfig);
   return {
     path: '/accounts/{id}/checkIntegrity',
     method: 'get',
