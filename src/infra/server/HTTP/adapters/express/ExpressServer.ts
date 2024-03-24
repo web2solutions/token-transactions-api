@@ -5,7 +5,6 @@ import helmet from 'helmet';
 import { IbaseHandler } from '@src/infra/server/HTTP/ports/IbaseHandler';
 import { HTTPBaseServer } from '@src/infra/server/HTTP/ports/HTTPBaseServer';
 
-let expressServer: any;
 class ExpressServer extends HTTPBaseServer<Express> {
   private _application: Express;
 
@@ -62,12 +61,6 @@ class ExpressServer extends HTTPBaseServer<Express> {
   public stop() {
     //     this._application.
     process.exit(0);
-  }
-
-  public static compile() {
-    if (expressServer) return expressServer;
-    expressServer = new ExpressServer();
-    return expressServer;
   }
 }
 

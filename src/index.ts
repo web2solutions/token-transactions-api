@@ -7,7 +7,7 @@ import { mutexService } from '@src/infra/mutex/adapter/MutexService';
 import { ExpressServer } from '@src/infra/server/HTTP/adapters/express/ExpressServer';
 import { infraHandlers } from '@src/infra/server/HTTP/adapters/express/handlers/infraHandlers';
 
-const webServer = ExpressServer.compile();
+const webServer = new ExpressServer();
 
 const API = new RestAPI<Express>({
   dbClient: InMemoryDbClient,
