@@ -11,7 +11,7 @@ import { HTTPBaseServer } from '@src/infra/server/HTTP/ports/HTTPBaseServer';
 const fastifyApp = fastify();
 type Fastify = typeof fastifyApp;
 
-// hyper-express
+let fastifyServer: HTTPBaseServer<Fastify>;
 
 class FastifyServer extends HTTPBaseServer<Fastify> {
   private _application: Fastify;
@@ -66,6 +66,12 @@ class FastifyServer extends HTTPBaseServer<Fastify> {
   // eslint-disable-next-line class-methods-use-this
   public stop(code: number = 0) {
     process.exit(code);
+  }
+
+  public static compile() {
+    if (fastifyServer) return fastifyServer;
+    fastifyServer = new FastifyServer();
+    return fastifyServer;
   }
 }
 
