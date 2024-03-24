@@ -9,7 +9,7 @@ let expressServer: any;
 class ExpressServer extends HTTPBaseServer<Express> {
   private _application: Express;
 
-  private constructor() {
+  constructor() {
     super();
     this._application = express();
     this._application.use(cors());

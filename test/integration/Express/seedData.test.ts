@@ -18,7 +18,7 @@ import {
   requestHeaderEmployee1
 } from '@test/mock';
 
-const webServer = ExpressServer.compile();
+const webServer = new ExpressServer();
 const API = new RestAPI<Express>({
   dbClient: InMemoryDbClient,
   webServer,

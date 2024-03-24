@@ -34,7 +34,9 @@ const addTransaction: EndPointFactory = (
       (async () => {
         try {
           isUserAccessGranted(((req as any).profile ?? {}), endPointConfig);
-          validateRequestBody(spec, endPointConfig, req.body);
+          // console.log({ spec, endPointConfig, body: req.body });
+          const r = validateRequestBody(spec, endPointConfig, req.body);
+          // console.log('add transaction >>>>>>>', r)
 
           const accountService = AccountService.compile({
             repos: {

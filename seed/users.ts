@@ -11,7 +11,7 @@ const users: Array<any> = [{
 {
   username: 'employee3',
   password: 'employee3_password',
-  permissions: ['create_transaction', 'view_account', 'view_transaction']
+  permissions: ['view_account', 'view_transaction']
 },
 {
   username: 'employee4',

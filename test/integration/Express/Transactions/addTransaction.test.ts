@@ -2,7 +2,7 @@
 import request from 'supertest';
 import { Express } from 'express';
 import { ExpressServer } from '@src/infra/server/HTTP/adapters/express/ExpressServer';
-
+import { infraHandlers } from '@src/infra/server/HTTP/adapters/express/handlers/infraHandlers';
 import { RestAPI } from '@src/infra/RestAPI';
 import { InMemoryDbClient } from '@src/infra/persistence/InMemoryDatabase/InMemoryDbClient';
 import { mutexService } from '@src/infra/mutex/adapter/MutexService';
@@ -15,14 +15,14 @@ import {
   transaction1,
   transaction2,
   transaction3
-} from '../../../mock';
+} from '@test/mock';
 
-const webServer = ExpressServer.compile();
+const webServer = new ExpressServer();
 const API = new RestAPI<Express>({
   dbClient: InMemoryDbClient,
   webServer,
   mutexService,
-  infraHandlers: {}
+  infraHandlers
 });
 const server = API.server.application;
 
@@ -145,7 +145,7 @@ describe('add Transaction suite', () => {
     expect(response.statusCode).toBe(400);
   });
 
-  it('employee2 must not be able to create new transaction - Forbidden: the role create_transaction is required', async () => {
+  it('employee2 must be able to create new transaction', async () => {
     expect.hasAssertions();
     const { userEmail, amount, type } = transaction1;
     const response = await request(server)
@@ -170,12 +170,11 @@ describe('add Transaction suite', () => {
       .set('Accept', 'application/json')
       .set(requestHeaderEmployee3);
 
-    expect(response.statusCode).toBe(201);
-    expect(response.body.userEmail).toBe(userEmail);
-    expect(response.body.amount).toBe(amount);
+    expect(response.statusCode).toBe(403);
+    expect(response.body.message).toBe('Forbidden - Insufficient permission - user must have the create_transaction role');
   });
 
-  it('employee4 must not be able to create new transaction - Forbidden: the role create_transaction is required', async () => {
+  it('employee4 must be able to create new transaction', async () => {
     expect.hasAssertions();
     const { userEmail, amount, type } = transaction3;
     const response = await request(server)
@@ -184,6 +183,7 @@ describe('add Transaction suite', () => {
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .set(requestHeaderEmployee4);
+    // console.log(response.body)
     expect(response.statusCode).toBe(201);
     expect(response.body.userEmail).toBe(userEmail);
     expect(response.body.amount).toBe(amount);

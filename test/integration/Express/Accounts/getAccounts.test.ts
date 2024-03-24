@@ -2,7 +2,7 @@
 import request from 'supertest';
 import { Express } from 'express';
 import { ExpressServer } from '@src/infra/server/HTTP/adapters/express/ExpressServer';
-
+import { infraHandlers } from '@src/infra/server/HTTP/adapters/express/handlers/infraHandlers';
 import {
   RestAPI
 } from '@src/infra/RestAPI';
@@ -17,13 +17,13 @@ import {
   requestHeaderEmployee3,
   requestHeaderEmployee4,
   requestHeaderGuest
-} from '../../../mock';
+} from '@test/mock';
 
-const webServer = ExpressServer.compile();
+const webServer = new ExpressServer();
 const API = new RestAPI<Express>({
   dbClient: InMemoryDbClient,
   webServer,
-  infraHandlers: {}
+  infraHandlers
 });
 const server = API.server.application;
 
