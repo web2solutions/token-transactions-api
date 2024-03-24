@@ -2,6 +2,7 @@
 import request from 'supertest';
 import { Express } from 'express';
 import { ExpressServer } from '@src/infra/server/HTTP/adapters/express/ExpressServer';
+
 import {
   RestAPI
 } from '@src/infra/RestAPI';
@@ -19,7 +20,11 @@ import {
 } from '../../../mock';
 
 const webServer = ExpressServer.compile();
-const API = new RestAPI<Express>(InMemoryDbClient, webServer);
+const API = new RestAPI<Express>({
+  dbClient: InMemoryDbClient,
+  webServer,
+  infraHandlers: {}
+});
 const server = API.server.application;
 
 describe('get Accounts suite', () => {

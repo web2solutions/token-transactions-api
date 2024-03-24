@@ -2,6 +2,7 @@
 import request from 'supertest';
 import { Express } from 'express';
 import { ExpressServer } from '@src/infra/server/HTTP/adapters/express/ExpressServer';
+
 import { RestAPI } from '@src/infra/RestAPI';
 import { InMemoryDbClient } from '@src/infra/persistence/InMemoryDatabase/InMemoryDbClient';
 import { mutexService } from '@src/infra/mutex/adapter/MutexService';
@@ -17,7 +18,12 @@ import {
 } from '../../../mock';
 
 const webServer = ExpressServer.compile();
-const API = new RestAPI<Express>(InMemoryDbClient, webServer, mutexService);
+const API = new RestAPI<Express>({
+  dbClient: InMemoryDbClient,
+  webServer,
+  mutexService,
+  infraHandlers: {}
+});
 const server = API.server.application;
 
 describe('add Transaction suite', () => {

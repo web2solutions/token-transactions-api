@@ -16,7 +16,11 @@ import {
 } from '../../../mock';
 
 const webServer = ExpressServer.compile();
-const API = new RestAPI<Express>(InMemoryDbClient, webServer);
+const API = new RestAPI<Express>({
+  dbClient: InMemoryDbClient,
+  webServer,
+  infraHandlers: {}
+});
 const server = API.server.application;
 
 describe('add Account suite', () => {

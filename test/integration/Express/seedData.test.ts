@@ -3,6 +3,7 @@
 import request from 'supertest';
 import { Express } from 'express';
 import { ExpressServer } from '@src/infra/server/HTTP/adapters/express/ExpressServer';
+import { infraHandlers } from '@src/infra/server/HTTP/adapters/express/handlers/infraHandlers';
 import {
   RestAPI
 } from '@src/infra/RestAPI';
@@ -15,14 +16,15 @@ import { mutexService } from '@src/infra/mutex/adapter/MutexService';
 import accounts from '@seed/accounts';
 import {
   requestHeaderEmployee1
-  // requestHeaderEmployee2,
-  // requestHeaderEmployee3,
-  // requestHeaderEmployee4,
-  // requestHeaderGuest,
 } from '@test/mock';
 
 const webServer = ExpressServer.compile();
-const API = new RestAPI<Express>(InMemoryDbClient, webServer, mutexService);
+const API = new RestAPI<Express>({
+  dbClient: InMemoryDbClient,
+  webServer,
+  infraHandlers,
+  mutexService
+});
 const server = API.server.application;
 
 describe('seed data suite', () => {
