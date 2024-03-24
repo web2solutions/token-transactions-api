@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 
+import { EndPointFactory } from '@src/infra/server/HTTP/ports/EndPointFactory';
 import { IHandlerFactory } from '@src/infra/server/HTTP/ports/IHandlerFactory';
 import { IbaseHandler } from '@src/infra/server/HTTP/ports/IbaseHandler';
 import basicAuth from '@src/infra/server/HTTP/adapters/express/auth/basicAuth';
@@ -20,9 +21,11 @@ import {
 } from '@src/domains/Accounts';
 import { IMutexClient } from '@src/domains/ports/mutex/IMutexClient';
 
-const addTransaction = ({
-  dbClient, endPointConfig, spec, mutexClient
-}: IHandlerFactory): IbaseHandler => {
+const addTransaction: EndPointFactory = (
+  {
+    dbClient, endPointConfig, spec, mutexClient
+  }: IHandlerFactory
+): IbaseHandler => {
   return {
     path: '/transactions',
     method: 'post',

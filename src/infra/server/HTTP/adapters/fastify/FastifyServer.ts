@@ -9,7 +9,7 @@ import { IbaseHandler } from '@src/infra/server/HTTP/ports/IbaseHandler';
 import { HTTPBaseServer } from '@src/infra/server/HTTP/ports/HTTPBaseServer';
 
 const fastifyApp = fastify();
-type Fastify = typeof fastifyApp;
+export type Fastify = typeof fastifyApp;
 
 let fastifyServer: HTTPBaseServer<Fastify>;
 

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 
+import { EndPointFactory } from '@src/infra/server/HTTP/ports/EndPointFactory';
 import { IHandlerFactory } from '@src/infra/server/HTTP/ports/IHandlerFactory';
 import { IbaseHandler } from '@src/infra/server/HTTP/ports/IbaseHandler';
 import basicAuth from '@src/infra/server/HTTP/adapters/express/auth/basicAuth';
@@ -12,7 +13,9 @@ import { sendErrorResponse } from '@src/infra/server/HTTP/adapters/express/respo
 import { AccountDataRepository, AccountService } from '@src/domains/Accounts';
 import { IIntegrity } from '@src/domains/Accounts/ports/IIntegrity';
 
-const checkAccountIntegrity = ({ dbClient, endPointConfig }: IHandlerFactory): IbaseHandler => {
+const checkAccountIntegrity: EndPointFactory = (
+  { dbClient, endPointConfig }: IHandlerFactory
+): IbaseHandler => {
   // console.log('endPointConfig>>>>>>>>>>> XXXXXX', endPointConfig);
   return {
     path: '/accounts/{id}/checkIntegrity',

@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { IHandlerFactory } from '@src/infra/server/HTTP/ports/IHandlerFactory';
 import { IbaseHandler } from '@src/infra/server/HTTP/ports/IbaseHandler';
 import basicAuth from '@src/infra/server/HTTP/adapters/express/auth/basicAuth';
+import { EndPointFactory } from '@src/infra/server/HTTP/ports/EndPointFactory';
 import {
   isUserAccessGranted,
   validateRequestBody
@@ -11,7 +12,9 @@ import { sendErrorResponse } from '@src/infra/server/HTTP/adapters/express/respo
 
 import { AccountDataRepository, AccountService } from '@src/domains/Accounts';
 
-const addAccount = ({ dbClient, endPointConfig, spec }: IHandlerFactory): IbaseHandler => {
+const addAccount: EndPointFactory = (
+  { dbClient, endPointConfig, spec }: IHandlerFactory
+): IbaseHandler => {
   return {
     path: '/accounts',
     method: 'post',

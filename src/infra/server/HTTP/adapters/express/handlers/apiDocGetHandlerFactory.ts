@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import { OpenAPIV3 } from 'openapi-types';
 
+import { EndPointFactory } from '@src/infra/server/HTTP/ports/EndPointFactory';
 import { IbaseHandler } from '@src/infra/server/HTTP/ports/IbaseHandler';
 import { sendErrorResponse } from '@src/infra/server/HTTP/adapters/express/responses/sendErrorResponse';
+import { IHandlerFactory } from '../../../ports/IHandlerFactory';
 
-const apiDocGetHandlerFactory = (
-  spec: OpenAPIV3.Document,
-  version: string
+const apiDocGetHandlerFactory: EndPointFactory = (
+  { spec, version }: IHandlerFactory
 ): IbaseHandler => {
   return {
     path: `/${version}`,

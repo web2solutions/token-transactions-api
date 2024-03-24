@@ -11,8 +11,6 @@ import { HTTPBaseServer } from '@src/infra/server/HTTP/ports/HTTPBaseServer';
 import { IDbClient } from '@src/infra/persistence/port/IDbClient';
 import { IMutexClient } from '@src/infra/mutex/port/IMutexClient';
 
-import localhostGetHandlerFactory from '@src/infra/server/HTTP/adapters/express/handlers/localhost.get';
-import apiVersionsGetHandlerFactory from '@src/infra/server/HTTP/adapters/express/handlers/apiversions.get';
 import apiDocGetHandlerFactory from '@src/infra/server/HTTP/adapters/express/handlers/apiDocGetHandlerFactory';
 
 import { AccountService, AccountDataRepository } from '@src/domains/Accounts';
@@ -21,6 +19,7 @@ import { TransactionService, TransactionDataRepository } from '@src/domains/Tran
 import transactions from '@seed/transactions';
 import accounts from '@seed/accounts';
 import { _API_PREFIX_, _DOCS_PREFIX_ } from './config/constants';
+import { IAPIFactory } from './server/HTTP/ports/IAPIFactory';
 
 export class RestAPI<T> {
   #_oas: Map<string, OpenAPIV3.Document> = new Map();
@@ -33,28 +32,18 @@ export class RestAPI<T> {
 
   #_mutexClient: IMutexClient | undefined;
 
-  constructor(
-    dbClient: IDbClient,
-    HttpServerAdapter: HTTPBaseServer<T>,
-    mutexClient?: IMutexClient
-  ) {
-    this.#_server = HttpServerAdapter;
+  constructor(config: IAPIFactory<T>) {
+    this.#_server = config.webServer;
 
-    this.#_dbClient = dbClient;
+    this.#_dbClient = config.dbClient;
 
-    if (mutexClient) {
-      this.#_mutexClient = mutexClient;
+    if (config.mutexService) {
+      this.#_mutexClient = config.mutexService;
       this.#_mutexClient?.connect();
     }
 
     this.#_buildWithOAS();
-
-    const localhostGet = localhostGetHandlerFactory();
-    this.#_server.endPointRegister(localhostGet);
-
-    // serve API docs as JSON
-    const apiVersionsGet = apiVersionsGetHandlerFactory(this.#_oas);
-    this.#_server.endPointRegister(apiVersionsGet);
+    this.#_buildInfraEndPoints(config);
 
     process.on('exit', () => {
       this.stop();
@@ -73,6 +62,24 @@ export class RestAPI<T> {
 
   public get mutexClient(): IMutexClient | undefined {
     return this.#_mutexClient;
+  }
+
+  #_buildInfraEndPoints(config: IAPIFactory<T>): void {
+    const noServiceInjection = {
+      dbClient: {} as IDbClient,
+      spec: {} as OpenAPIV3.Document,
+      endPointConfig: {}
+    };
+
+    const localhostGet = config.infraHandlers.localhostGetHandlerFactory({ ...noServiceInjection });
+    this.#_server.endPointRegister(localhostGet);
+
+    // serve API docs as JSON
+    const apiVersionsGet = config.infraHandlers.apiVersionsGetHandlerFactory({
+      ...noServiceInjection,
+      apiDocs: this.#_oas
+    });
+    this.#_server.endPointRegister(apiVersionsGet);
   }
 
   #_buildWithOAS(): void {
@@ -113,7 +120,12 @@ export class RestAPI<T> {
   #_buildDocEndPoints(): void {
     for (const [version, spec] of this.#_oas) {
       this.#_server.endPointRegister({
-        ...apiDocGetHandlerFactory(spec, version),
+        ...apiDocGetHandlerFactory({
+          spec,
+          version,
+          dbClient: {} as IDbClient,
+          endPointConfig: {}
+        }),
         path: `${_DOCS_PREFIX_}/${version}`
       });
     }

@@ -6,5 +6,7 @@ export interface IHandlerFactory {
     dbClient: IDbClient;
     mutexClient?: IMutexClient;
     endPointConfig: Record<string, any>;
-    spec: OpenAPIV3.Document
+    spec: OpenAPIV3.Document;
+    version?: string;
+    apiDocs?: Map<string, OpenAPIV3.Document>;
 }
