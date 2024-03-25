@@ -27,7 +27,7 @@ const API = new RestAPI<Fastify>({
 });
 const server = API.server.application;
 
-describe('checkAccountIntegrity suite', () => {
+describe('fastify -> checkAccountIntegrity suite', () => {
   let createdAccount: IAccount;
   beforeAll(async () => {
     await server.ready();

@@ -33,7 +33,7 @@ const API = new RestAPI<Express>({
 });
 const server = API.server.application;
 
-describe('deleteTransactionById suite', () => {
+describe('express -> deleteTransactionById suite', () => {
   let createdTransaction: ITransaction;
   beforeAll(async () => {
     const {

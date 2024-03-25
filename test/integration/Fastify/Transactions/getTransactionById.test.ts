@@ -33,7 +33,7 @@ const API = new RestAPI<Fastify>({
 });
 const server = API.server.application;
 
-describe('getTransactionById suite', () => {
+describe('fastify -> getTransactionById suite', () => {
   let createdTransaction: ITransaction;
   beforeAll(async () => {
     await server.ready();

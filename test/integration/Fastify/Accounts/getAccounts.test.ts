@@ -27,7 +27,7 @@ const API = new RestAPI<Fastify>({
 });
 const server = API.server.application;
 
-describe('get Accounts suite', () => {
+describe('fastify -> get Accounts suite', () => {
   beforeAll(async () => {
     await server.ready();
     await API.seedAccounts();

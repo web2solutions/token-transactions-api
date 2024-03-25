@@ -30,7 +30,7 @@ const API = new RestAPI<Fastify>({
 });
 const server = API.server.application;
 
-describe('getAccountById suite', () => {
+describe('fastify -> getAccountById suite', () => {
   let createdAccount: IAccount;
   beforeAll(async () => {
     await server.ready();

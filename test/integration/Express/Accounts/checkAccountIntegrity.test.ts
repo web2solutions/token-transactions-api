@@ -27,7 +27,7 @@ const API = new RestAPI<Express>({
 });
 const server = API.server.application;
 
-describe('checkAccountIntegrity suite', () => {
+describe('express -> checkAccountIntegrity suite', () => {
   let createdAccount: IAccount;
   beforeAll(async () => {
     // create account

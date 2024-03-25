@@ -30,7 +30,7 @@ const API = new RestAPI<Fastify>({
 });
 const server = API.server.application;
 
-describe('deleteAccountById suite', () => {
+describe('fastify -> deleteAccountById suite', () => {
   let createdAccount: IAccount;
   beforeAll(async () => {
     await server.ready();

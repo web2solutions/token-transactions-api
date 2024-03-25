@@ -26,7 +26,7 @@ describe('/localhost suite', () => {
     await application.close();
   });
 
-  it('localhost should return 200', async () => {
+  it('fastify -> localhost should return 200', async () => {
     expect.hasAssertions();
     const response = await request(application.server)
       .get('/')

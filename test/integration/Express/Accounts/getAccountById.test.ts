@@ -30,7 +30,7 @@ const API = new RestAPI<Express>({
 });
 const server = API.server.application;
 
-describe('getAccountById suite', () => {
+describe('express -> getAccountById suite', () => {
   let createdAccount: IAccount;
   beforeAll(async () => {
     // create account

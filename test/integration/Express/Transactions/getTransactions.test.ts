@@ -29,7 +29,7 @@ const API = new RestAPI<Express>({
 });
 const server = API.server.application as Express;
 
-describe('get Transactions suite', () => {
+describe('express -> get Transactions suite', () => {
   beforeAll(async () => {
     try {
       await API.seedAccounts();

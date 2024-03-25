@@ -15,7 +15,7 @@ const API = new RestAPI<Express>({
 });
 const server = API.server.application;
 
-describe('/localhost suite', () => {
+describe('express -> /localhost suite', () => {
   afterAll(async () => {
     await API.stop();
   });

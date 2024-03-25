@@ -29,7 +29,7 @@ const API = new RestAPI<Fastify>({
 });
 const server = API.server.application;
 
-describe('get Transactions suite', () => {
+describe('fastify -> get Transactions suite', () => {
   beforeAll(async () => {
     await server.ready();
     try {

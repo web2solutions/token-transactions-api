@@ -33,7 +33,7 @@ const API = new RestAPI<Express>({
 });
 const server = API.server.application as Express;
 
-describe('getTransactionById suite', () => {
+describe('express -> getTransactionById suite', () => {
   let createdTransaction: ITransaction;
   beforeAll(async () => {
     const {
