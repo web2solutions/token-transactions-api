@@ -211,8 +211,16 @@ It may implement database access through native drivers or ORMs and ODMs.
 
 ### Run the API - 3000 port
 
+Run with Express
+
 ```bash
-    npm run dev
+    npm run dev:fastify
+```
+
+Run with Fastify
+
+```bash
+    npm run dev:fastify
 ```
 
 1. Reach the URL http://localhost:3000/doc/ and click in the `Version 1.0.0`. It will open the API documentation.
