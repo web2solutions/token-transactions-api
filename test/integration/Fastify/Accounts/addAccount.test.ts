@@ -1,7 +1,6 @@
 /* global  describe, it, expect */
 import request from 'supertest';
-import { Express } from 'express';
-import { ExpressServer } from '@src/infra/server/HTTP/adapters/express/ExpressServer';
+import { FastifyServer, Fastify } from '@src/infra/server/HTTP/adapters/fastify/FastifyServer';
 import { infraHandlers } from '@src/infra/server/HTTP/adapters/express/handlers/infraHandlers';
 import { RestAPI } from '@src/infra/RestAPI';
 import { InMemoryDbClient } from '@src/infra/persistence/InMemoryDatabase/InMemoryDbClient';
@@ -16,28 +15,34 @@ import {
   account3
 } from '@test/mock';
 
-const webServer = new ExpressServer();
-const API = new RestAPI<Express>({
+const webServer = new FastifyServer();
+const API = new RestAPI<Fastify>({
   dbClient: InMemoryDbClient,
   webServer,
-  infraHandlers
+  infraHandlers,
+  serverType: 'fastify'
 });
 const server = API.server.application;
 
 describe('add Account suite', () => {
+  beforeAll(async () => {
+    await server.ready();
+  });
   afterAll(async () => {
     await API.stop();
+    await server.close();
   });
 
   it('employee1 must be able to create an account - account data 1', async () => {
     expect.hasAssertions();
     const { userEmail, balance } = account1;
-    const response = await request(server)
+    const response = await request(server.server)
       .post('/api/1.0.0/accounts')
       .send({ userEmail, balance })
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .set(requestHeaderEmployee1);
+    // console.log(response.body);
     expect(response.body.userEmail).toBe(account1.userEmail);
     expect(response.body.chain[0].data.balance).toBe(balance);
     expect(response.body.chain[0].data.id).toBe('_genesis_');
@@ -47,7 +52,7 @@ describe('add Account suite', () => {
   it('employee1 must be able to create an account with balance equal 0 - account data 2', async () => {
     expect.hasAssertions();
     const { userEmail } = account2;
-    const response = await request(server)
+    const response = await request(server.server)
       .post('/api/1.0.0/accounts')
       .send({ userEmail, balance: 0 })
       .set('Content-Type', 'application/json')
@@ -63,7 +68,7 @@ describe('add Account suite', () => {
   it('employee1 must not be able to create a duplicated account - account data 1', async () => {
     expect.hasAssertions();
     const { userEmail, balance } = account1;
-    const response = await request(server)
+    const response = await request(server.server)
       .post('/api/1.0.0/accounts')
       .send({ userEmail, balance })
       .set('Content-Type', 'application/json')
@@ -76,7 +81,7 @@ describe('add Account suite', () => {
   it('employee1 must not be able to create an account with balance less than 0 - account data 1', async () => {
     expect.hasAssertions();
     const { userEmail } = account3;
-    const response = await request(server)
+    const response = await request(server.server)
       .post('/api/1.0.0/accounts')
       .send({ userEmail, balance: -1 })
       .set('Content-Type', 'application/json')
@@ -88,7 +93,7 @@ describe('add Account suite', () => {
 
   it('employee1 must not be able to place new account with unknown field', async () => {
     expect.hasAssertions();
-    const response = await request(server)
+    const response = await request(server.server)
       .post('/api/1.0.0/accounts')
       .send({
         invalidFieldName: 50
@@ -103,7 +108,7 @@ describe('add Account suite', () => {
 
   it('employee1 must not be able to place new account with empty payload', async () => {
     expect.hasAssertions();
-    const response = await request(server)
+    const response = await request(server.server)
       .post('/api/1.0.0/accounts')
       .send({})
       .set('Content-Type', 'application/json')
@@ -115,7 +120,7 @@ describe('add Account suite', () => {
 
   it('employee2 must not be able to place new account - Forbidden: the role create_account is required', async () => {
     expect.hasAssertions();
-    const response = await request(server)
+    const response = await request(server.server)
       .post('/api/1.0.0/accounts')
       .send(account1)
       .set('Content-Type', 'application/json')
@@ -127,7 +132,7 @@ describe('add Account suite', () => {
 
   it('employee3 must not be able to place new account - Forbidden: the role create_account is required', async () => {
     expect.hasAssertions();
-    const response = await request(server)
+    const response = await request(server.server)
       .post('/api/1.0.0/accounts')
       .send(account1)
       .set('Content-Type', 'application/json')
@@ -140,7 +145,7 @@ describe('add Account suite', () => {
 
   it('employee4 must not be able to place new account - Forbidden: the role create_account is required', async () => {
     expect.hasAssertions();
-    const response = await request(server)
+    const response = await request(server.server)
       .post('/api/1.0.0/accounts')
       .send(account1)
       .set('Content-Type', 'application/json')
@@ -153,7 +158,7 @@ describe('add Account suite', () => {
 
   it('guest must not be able to place new account - Unauthorized', async () => {
     expect.hasAssertions();
-    const response = await request(server)
+    const response = await request(server.server)
       .post('/api/1.0.0/accounts')
       .send(account1)
       .set('Content-Type', 'application/json')

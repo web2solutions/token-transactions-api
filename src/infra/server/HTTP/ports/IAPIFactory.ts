@@ -6,6 +6,7 @@ import { EndPointFactory } from '@src/infra/server/HTTP/ports/EndPointFactory';
 export interface IAPIFactory<ServerType> {
   dbClient: IDbClient,
   webServer: IHTTPServer<ServerType>,
+  serverType?: string;
   mutexService?: IMutexClient,
   infraHandlers: Record<string, EndPointFactory>
 }

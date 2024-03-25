@@ -11,8 +11,6 @@ import { HTTPBaseServer } from '@src/infra/server/HTTP/ports/HTTPBaseServer';
 import { IDbClient } from '@src/infra/persistence/port/IDbClient';
 import { IMutexClient } from '@src/infra/mutex/port/IMutexClient';
 
-import apiDocGetHandlerFactory from '@src/infra/server/HTTP/adapters/express/handlers/apiDocGetHandlerFactory';
-
 import { AccountService, AccountDataRepository } from '@src/domains/Accounts';
 import { TransactionService, TransactionDataRepository } from '@src/domains/Transactions';
 
@@ -28,11 +26,14 @@ export class RestAPI<T> {
 
   #_server: HTTPBaseServer<T>;
 
+  #_serverType: string;
+
   #_dbClient: IDbClient;
 
   #_mutexClient: IMutexClient | undefined;
 
   constructor(config: IAPIFactory<T>) {
+    this.#_serverType = config.serverType ? config.serverType.toLowerCase() : 'express';
     this.#_server = config.webServer;
 
     this.#_dbClient = config.dbClient;
@@ -80,6 +81,18 @@ export class RestAPI<T> {
       apiDocs: this.#_oas
     });
     this.#_server.endPointRegister(apiVersionsGet);
+
+    for (const [version, spec] of this.#_oas) {
+      this.#_server.endPointRegister({
+        ...config.infraHandlers.apiDocGetHandlerFactory({
+          spec,
+          version,
+          dbClient: {} as IDbClient,
+          endPointConfig: {}
+        }),
+        path: `${_DOCS_PREFIX_}/${version}`
+      });
+    }
   }
 
   #_buildWithOAS(): void {
@@ -91,7 +104,6 @@ export class RestAPI<T> {
       this.#_oas.set(jsonOAS.info.version, jsonOAS);
     }
     this.#_buildEndPoints();
-    this.#_buildDocEndPoints();
     // console.timeEnd('Load spec files');
   }
 
@@ -102,7 +114,7 @@ export class RestAPI<T> {
         const methods: string[] = Object.keys(endPointConfigs);
         for (const method of methods) {
           const endPointConfig: Record<string, any> = endPointConfigs[method];
-          const handlerFactory = require(`@src/infra/server/HTTP/adapters/express/handlers/${endPointConfig.operationId}`).default({
+          const handlerFactory = require(`@src/infra/server/HTTP/adapters/${this.#_serverType}/handlers/${endPointConfig.operationId}`).default({
             dbClient: this.#_dbClient,
             mutexClient: this.#_mutexClient,
             endPointConfig,
@@ -114,20 +126,6 @@ export class RestAPI<T> {
           });
         }
       }
-    }
-  }
-
-  #_buildDocEndPoints(): void {
-    for (const [version, spec] of this.#_oas) {
-      this.#_server.endPointRegister({
-        ...apiDocGetHandlerFactory({
-          spec,
-          version,
-          dbClient: {} as IDbClient,
-          endPointConfig: {}
-        }),
-        path: `${_DOCS_PREFIX_}/${version}`
-      });
     }
   }
 

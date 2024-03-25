@@ -1,7 +1,6 @@
 /* global  describe, it, expect */
 import request from 'supertest';
-import { Express } from 'express';
-import { ExpressServer } from '@src/infra/server/HTTP/adapters/express/ExpressServer';
+import { FastifyServer, Fastify } from '@src/infra/server/HTTP/adapters/fastify/FastifyServer';
 import { infraHandlers } from '@src/infra/server/HTTP/adapters/express/handlers/infraHandlers';
 import {
   InMemoryDbClient
@@ -20,25 +19,27 @@ import {
   requestHeaderEmployee4,
   requestHeaderGuest,
   account1
-} from '@test/mock';
+} from '../mock';
 
-const webServer = new ExpressServer();
-const API = new RestAPI<Express>({
+const webServer = new FastifyServer();
+const API = new RestAPI<Fastify>({
   dbClient: InMemoryDbClient,
   webServer,
-  infraHandlers
+  infraHandlers,
+  serverType: 'fastify'
 });
 const server = API.server.application;
 
-describe('getAccountById suite', () => {
+describe('deleteAccountById suite', () => {
   let createdAccount: IAccount;
   beforeAll(async () => {
+    await server.ready();
     // create account
     const {
       userEmail,
       balance
     } = account1;
-    const response = await request(server)
+    const response = await request(server.server)
       .post('/api/1.0.0/accounts')
       .send({
         userEmail,
@@ -51,60 +52,61 @@ describe('getAccountById suite', () => {
   });
   afterAll(async () => {
     await API.stop();
+    await server.close();
   });
 
-  it('employee1 must be able to read an account data', async () => {
+  it('employee1 must be able to delete account', async () => {
     expect.hasAssertions();
-    const response = await request(server)
-      .get(`/api/1.0.0/accounts/${createdAccount.id}`)
+    const response = await request(server.server)
+      .delete(`/api/1.0.0/accounts/${createdAccount.id}`)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .set(requestHeaderEmployee1);
 
     expect(response.statusCode).toBe(200);
-    expect(response.body.userEmail).toBe(createdAccount.userEmail);
+    expect(response.body.deleted).toBeTruthy();
   });
 
-  it('employee2 must be able to read an account data', async () => {
+  it('employee2 must not be able to delete an account - Forbidden: delete_account role required', async () => {
     expect.hasAssertions();
-    const response = await request(server)
-      .get(`/api/1.0.0/accounts/${createdAccount.id}`)
+    const response = await request(server.server)
+      .delete(`/api/1.0.0/accounts/${createdAccount.id}`)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .set(requestHeaderEmployee2);
-
-    expect(response.statusCode).toBe(200);
-    expect(response.body.userEmail).toBe(createdAccount.userEmail);
+    // console.log(response.body.message)
+    expect(response.statusCode).toBe(403);
+    expect(response.body.message).toBe('Forbidden - Insufficient permission - user must have the delete_account role');
   });
 
-  it('employee3 must be able to read an account data', async () => {
+  it('employee3 must not be able to delete an account - Forbidden: delete_account role required', async () => {
     expect.hasAssertions();
-    const response = await request(server)
-      .get(`/api/1.0.0/accounts/${createdAccount.id}`)
+    const response = await request(server.server)
+      .delete(`/api/1.0.0/accounts/${createdAccount.id}`)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .set(requestHeaderEmployee3);
-
-    expect(response.statusCode).toBe(200);
-    expect(response.body.userEmail).toBe(createdAccount.userEmail);
+    // console.log(response.body.message)
+    expect(response.statusCode).toBe(403);
+    expect(response.body.message).toBe('Forbidden - Insufficient permission - user must have the delete_account role');
   });
 
-  it('employee4 must not be able to read an account data - Forbidden: view_account role required', async () => {
+  it('employee4 must not be able to delete an account - Forbidden: delete_account role required', async () => {
     expect.hasAssertions();
-    const response = await request(server)
-      .get(`/api/1.0.0/accounts/${createdAccount.id}`)
+    const response = await request(server.server)
+      .delete(`/api/1.0.0/accounts/${createdAccount.id}`)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .set(requestHeaderEmployee4);
     // console.log(response.body.message)
     expect(response.statusCode).toBe(403);
-    expect(response.body.message).toBe('Forbidden - Insufficient permission - user must have the view_account role');
+    expect(response.body.message).toBe('Forbidden - Insufficient permission - user must have the delete_account role');
   });
 
-  it('guest must not be able to read an account data - Unauthorized', async () => {
+  it('guest must not be able to delete an account - Unauthorized', async () => {
     expect.hasAssertions();
-    const response = await request(server)
-      .get(`/api/1.0.0/accounts/${createdAccount.id}`)
+    const response = await request(server.server)
+      .delete(`/api/1.0.0/accounts/${createdAccount.id}`)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .set(requestHeaderGuest);

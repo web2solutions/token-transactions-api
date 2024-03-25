@@ -49,6 +49,9 @@ describe('deleteAccountById suite', () => {
       .set(requestHeaderEmployee1);
     createdAccount = response.body;
   });
+  afterAll(async () => {
+    await API.stop();
+  });
 
   it('employee1 must be able to delete account', async () => {
     expect.hasAssertions();

@@ -1,7 +1,6 @@
 /* global  describe, it, expect */
 import request from 'supertest';
-import { Express } from 'express';
-import { ExpressServer } from '@src/infra/server/HTTP/adapters/express/ExpressServer';
+import { FastifyServer, Fastify } from '@src/infra/server/HTTP/adapters/fastify/FastifyServer';
 import { infraHandlers } from '@src/infra/server/HTTP/adapters/express/handlers/infraHandlers';
 import {
   InMemoryDbClient
@@ -22,23 +21,25 @@ import {
   account1
 } from '@test/mock';
 
-const webServer = new ExpressServer();
-const API = new RestAPI<Express>({
+const webServer = new FastifyServer();
+const API = new RestAPI<Fastify>({
   dbClient: InMemoryDbClient,
   webServer,
-  infraHandlers
+  infraHandlers,
+  serverType: 'fastify'
 });
 const server = API.server.application;
 
 describe('getAccountById suite', () => {
   let createdAccount: IAccount;
   beforeAll(async () => {
+    await server.ready();
     // create account
     const {
       userEmail,
       balance
     } = account1;
-    const response = await request(server)
+    const response = await request(server.server)
       .post('/api/1.0.0/accounts')
       .send({
         userEmail,
@@ -51,11 +52,12 @@ describe('getAccountById suite', () => {
   });
   afterAll(async () => {
     await API.stop();
+    await server.close();
   });
 
   it('employee1 must be able to read an account data', async () => {
     expect.hasAssertions();
-    const response = await request(server)
+    const response = await request(server.server)
       .get(`/api/1.0.0/accounts/${createdAccount.id}`)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
@@ -67,7 +69,7 @@ describe('getAccountById suite', () => {
 
   it('employee2 must be able to read an account data', async () => {
     expect.hasAssertions();
-    const response = await request(server)
+    const response = await request(server.server)
       .get(`/api/1.0.0/accounts/${createdAccount.id}`)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
@@ -79,7 +81,7 @@ describe('getAccountById suite', () => {
 
   it('employee3 must be able to read an account data', async () => {
     expect.hasAssertions();
-    const response = await request(server)
+    const response = await request(server.server)
       .get(`/api/1.0.0/accounts/${createdAccount.id}`)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
@@ -91,7 +93,7 @@ describe('getAccountById suite', () => {
 
   it('employee4 must not be able to read an account data - Forbidden: view_account role required', async () => {
     expect.hasAssertions();
-    const response = await request(server)
+    const response = await request(server.server)
       .get(`/api/1.0.0/accounts/${createdAccount.id}`)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
@@ -103,7 +105,7 @@ describe('getAccountById suite', () => {
 
   it('guest must not be able to read an account data - Unauthorized', async () => {
     expect.hasAssertions();
-    const response = await request(server)
+    const response = await request(server.server)
       .get(`/api/1.0.0/accounts/${createdAccount.id}`)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')

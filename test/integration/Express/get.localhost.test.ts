@@ -16,6 +16,10 @@ const API = new RestAPI<Express>({
 const server = API.server.application;
 
 describe('/localhost suite', () => {
+  afterAll(async () => {
+    await API.stop();
+  });
+
   it('localhost should return 200', async () => {
     expect.hasAssertions();
     const response = await request(server)

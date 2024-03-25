@@ -1,7 +1,6 @@
 /* global  describe, it, expect */
 import request from 'supertest';
-import { Express } from 'express';
-import { ExpressServer } from '@src/infra/server/HTTP/adapters/express/ExpressServer';
+import { FastifyServer, Fastify } from '@src/infra/server/HTTP/adapters/fastify/FastifyServer';
 import { infraHandlers } from '@src/infra/server/HTTP/adapters/express/handlers/infraHandlers';
 import {
   InMemoryDbClient
@@ -19,35 +18,38 @@ import {
   requestHeaderGuest
 } from '@test/mock';
 
-const webServer = new ExpressServer();
-const API = new RestAPI<Express>({
+const webServer = new FastifyServer();
+const API = new RestAPI<Fastify>({
   dbClient: InMemoryDbClient,
   webServer,
-  infraHandlers
+  infraHandlers,
+  serverType: 'fastify'
 });
 const server = API.server.application;
 
 describe('checkAccountIntegrity suite', () => {
   let createdAccount: IAccount;
   beforeAll(async () => {
+    await server.ready();
     // create account
     await API.seedAccounts();
     await API.seedTransactions();
   });
   afterAll(async () => {
     await API.stop();
+    await server.close();
   });
 
   it('account integrity status must be healthy', async () => {
     expect.hasAssertions();
-    const { body } = await request(server)
+    const { body } = await request(server.server)
       .get('/api/1.0.0/accounts')
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .set(requestHeaderEmployee1);
     [createdAccount] = body;
 
-    const response = await request(server)
+    const response = await request(server.server)
       .get(`/api/1.0.0/accounts/${createdAccount.id}/checkIntegrity`)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
@@ -61,7 +63,7 @@ describe('checkAccountIntegrity suite', () => {
 
   it('employee4 must not be able to check account integrity - Forbidden: view_account role required', async () => {
     expect.hasAssertions();
-    const response = await request(server)
+    const response = await request(server.server)
       .get(`/api/1.0.0/accounts/${createdAccount.id}`)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
@@ -73,7 +75,7 @@ describe('checkAccountIntegrity suite', () => {
 
   it('guest must not be able to check account integrity - Unauthorized', async () => {
     expect.hasAssertions();
-    const response = await request(server)
+    const response = await request(server.server)
       .get(`/api/1.0.0/accounts/${createdAccount.id}`)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
