@@ -11,7 +11,8 @@ const API = new RestAPI<Fastify>({
   dbClient: InMemoryDbClient,
   webServer,
   mutexService,
-  infraHandlers
+  infraHandlers,
+  serverType: 'fastify'
 });
 
 // eslint-disable-next-line jest/require-hook
