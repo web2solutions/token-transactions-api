@@ -4,6 +4,7 @@ import helmet from '@fastify/helmet';
 import fastifyStatic from '@fastify/static';
 import formBody from '@fastify/formbody';
 import path from 'node:path';
+import { _HTTP_PORT_ } from '@src/infra/config/constants';
 import { IbaseHandler } from '@src/infra/server/HTTP/ports/IbaseHandler';
 import { HTTPBaseServer } from '@src/infra/server/HTTP/ports/HTTPBaseServer';
 
@@ -17,13 +18,16 @@ class FastifyServer extends HTTPBaseServer<Fastify> {
     super();
     this._application = fastifyApp;
     this._application.register(cors, {});
-    this._application.register(helmet);
+    this._application.register(helmet, {
+      contentSecurityPolicy: {
+        useDefaults: false
+      }
+    });
     this._application.register(formBody);
-    // this._application.use(bodyParser.json({ limit: '100mb' }));
-    // this._application.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
     this._application.register(fastifyStatic, {
-      root: path.join(__dirname, 'doc')
+      root: path.join(__dirname, '../../../../../../doc'),
+      prefix: '/doc/'
     });
   }
 
@@ -53,7 +57,9 @@ class FastifyServer extends HTTPBaseServer<Fastify> {
 
   public async start(): Promise<void> {
     try {
-      await this._application.listen({ port: 3000 });
+      await this._application.listen({ port: _HTTP_PORT_ });
+      // eslint-disable-next-line no-console
+      console.log(`Fastify App Listening on Port ${_HTTP_PORT_}`);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(`An error occurred: ${JSON.stringify(error)}`);

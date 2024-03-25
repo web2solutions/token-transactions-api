@@ -3,6 +3,7 @@ import express, { Express } from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import helmet from 'helmet';
+import { _HTTP_PORT_ } from '@src/infra/config/constants';
 import { IbaseHandler } from '@src/infra/server/HTTP/ports/IbaseHandler';
 import { HTTPBaseServer } from '@src/infra/server/HTTP/ports/HTTPBaseServer';
 
@@ -45,9 +46,9 @@ class ExpressServer extends HTTPBaseServer<Express> {
   public start(): Promise<string | Error> {
     return new Promise((resolve, reject) => {
       try {
-        this._application.listen(3000, () => {
+        this._application.listen(_HTTP_PORT_, () => {
           // eslint-disable-next-line no-console
-          console.log('Express App Listening on Port 3001');
+          console.log(`Express App Listening on Port ${_HTTP_PORT_}`);
           resolve('ok');
         });
       } catch (error) {

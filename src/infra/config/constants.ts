@@ -1,3 +1,4 @@
+const _HTTP_PORT_ = 3000;
 const _DOCS_PREFIX_ = '/docs';
 const _API_PREFIX_ = '/api';
 
@@ -12,6 +13,7 @@ const _DATABASE_NOT_FOUND_ERROR_NAME_ = 'database_not_found';
 const _DATABASE_DUPLICATED_RECORD_ERROR_NAME_ = 'database_duplicated';
 
 export {
+  _HTTP_PORT_,
   _DOCS_PREFIX_,
   _API_PREFIX_,
   _MINUTES_IN_THE_FUTURE_,

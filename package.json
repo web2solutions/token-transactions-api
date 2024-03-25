@@ -2,14 +2,15 @@
   "name": "token-transactions-api",
   "version": "1.0.0",
   "description": "Token Transactions API",
-  "main": "index.js",
+  "main": "express.ts",
   "engines": {
     "npm": ">=8.0.0",
     "node": ">=20.0.0"
   },
   "scripts": {
     "test": "jest --verbose --detectOpenHandles",
-    "dev": "ts-node ./src/index.ts",
+    "dev:express": "ts-node ./src/express.ts",
+    "dev:fastify": "ts-node ./src/fastify.ts",
     "tdd": "jest --watchAll --verbose --detectOpenHandles",
     "prepare": "husky install",
     "commit": "npm run lint && npm run test && git add . && git-cz",
