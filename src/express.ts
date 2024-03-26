@@ -1,6 +1,5 @@
 /* eslint-disable quote-props */
 import { Express } from 'express';
-
 import { RestAPI } from '@src/infra/RestAPI';
 import { InMemoryDbClient } from '@src/infra/persistence/InMemoryDatabase/InMemoryDbClient';
 import { mutexService } from '@src/infra/mutex/adapter/MutexService';

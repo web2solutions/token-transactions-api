@@ -16,8 +16,10 @@ import { TransactionService, TransactionDataRepository } from '@src/domains/Tran
 
 import transactions from '@seed/transactions';
 import accounts from '@seed/accounts';
+
+import { IAPIFactory } from '@src/infra/server/HTTP/ports/IAPIFactory';
+import { EHTTPFrameworks } from '@src/infra/server/HTTP/ports/EHTTPFrameworks';
 import { _API_PREFIX_, _DOCS_PREFIX_ } from './config/constants';
-import { IAPIFactory } from './server/HTTP/ports/IAPIFactory';
 
 export class RestAPI<T> {
   #_oas: Map<string, OpenAPIV3.Document> = new Map();
@@ -26,14 +28,14 @@ export class RestAPI<T> {
 
   #_server: HTTPBaseServer<T>;
 
-  #_serverType: string;
+  #_serverType: EHTTPFrameworks;
 
   #_dbClient: IDbClient;
 
   #_mutexClient: IMutexClient | undefined;
 
   constructor(config: IAPIFactory<T>) {
-    this.#_serverType = config.serverType ? config.serverType.toLowerCase() : 'express';
+    this.#_serverType = config.serverType ?? EHTTPFrameworks.express;
     this.#_server = config.webServer;
 
     this.#_dbClient = config.dbClient;

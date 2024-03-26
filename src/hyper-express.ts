@@ -1,19 +1,20 @@
 /* eslint-disable quote-props */
+import HyperExpress from 'hyper-express';
 import { RestAPI } from '@src/infra/RestAPI';
+import { HyperExpressServer } from '@src/infra/server/HTTP/adapters/hyper-express/HyperExpressServer';
+import { infraHandlers } from '@src/infra/server/HTTP/adapters/hyper-express/handlers/infraHandlers';
 import { InMemoryDbClient } from '@src/infra/persistence/InMemoryDatabase/InMemoryDbClient';
 import { mutexService } from '@src/infra/mutex/adapter/MutexService';
-import { FastifyServer, Fastify } from '@src/infra/server/HTTP/adapters/fastify/FastifyServer';
-import { infraHandlers } from '@src/infra/server/HTTP/adapters/fastify/handlers/infraHandlers';
 import { EHTTPFrameworks } from '@src/infra/server/HTTP/ports/EHTTPFrameworks';
 
-const webServer = new FastifyServer();
+const webServer = new HyperExpressServer();
 
-const API = new RestAPI<Fastify>({
+const API = new RestAPI<HyperExpress.Server>({
   dbClient: InMemoryDbClient,
   webServer,
   mutexService,
   infraHandlers,
-  serverType: EHTTPFrameworks.fastify
+  serverType: EHTTPFrameworks.hyper_express
 });
 
 // eslint-disable-next-line jest/require-hook

@@ -1,6 +1,6 @@
 import fastify from 'fastify';
 import cors from '@fastify/cors';
-import helmet from '@fastify/helmet';
+// import helmet from '@fastify/helmet';
 import fastifyStatic from '@fastify/static';
 import formBody from '@fastify/formbody';
 import path from 'node:path';
@@ -8,7 +8,9 @@ import { _HTTP_PORT_ } from '@src/infra/config/constants';
 import { IbaseHandler } from '@src/infra/server/HTTP/ports/IbaseHandler';
 import { HTTPBaseServer } from '@src/infra/server/HTTP/ports/HTTPBaseServer';
 
-const fastifyApp = fastify();
+const fastifyApp = fastify({
+  bodyLimit: 1048576 * 100 // 100mb
+});
 export type Fastify = typeof fastifyApp;
 
 class FastifyServer extends HTTPBaseServer<Fastify> {
@@ -18,17 +20,14 @@ class FastifyServer extends HTTPBaseServer<Fastify> {
     super();
     this._application = fastifyApp;
     this._application.register(cors, {});
-    this._application.register(helmet, {
+    /* this._application.register(helmet, {
       contentSecurityPolicy: {
         useDefaults: false
       }
-    });
+    }); */
     this._application.register(formBody);
 
-    this._application.register(fastifyStatic, {
-      root: path.join(__dirname, '../../../../../../doc'),
-      prefix: '/doc/'
-    });
+    this.createDocEndPoint();
   }
 
   get application(): Fastify {
@@ -40,7 +39,6 @@ class FastifyServer extends HTTPBaseServer<Fastify> {
       if (handlerFactory.securitySchemes) {
         (this._application as any)[handlerFactory.method](
           handlerFactory.path,
-          // handlerFactory.securitySchemes,
           { preHandler: [handlerFactory.securitySchemes] },
           handlerFactory.handler
         );
@@ -53,6 +51,13 @@ class FastifyServer extends HTTPBaseServer<Fastify> {
     } catch (error) {
       // console.log(error);
     }
+  }
+
+  private createDocEndPoint() {
+    this._application.register(fastifyStatic, {
+      root: path.join(__dirname, '../../../../../../doc'),
+      prefix: '/doc/'
+    });
   }
 
   public async start(): Promise<void> {
