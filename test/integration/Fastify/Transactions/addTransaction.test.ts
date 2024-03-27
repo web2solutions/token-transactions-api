@@ -15,6 +15,7 @@ import {
   transaction2,
   transaction3
 } from '@test/mock';
+import { EHTTPFrameworks } from '@src/infra/server/HTTP/ports/EHTTPFrameworks';
 
 const webServer = new FastifyServer();
 const API = new RestAPI<Fastify>({
@@ -22,7 +23,7 @@ const API = new RestAPI<Fastify>({
   webServer,
   infraHandlers,
   mutexService,
-  serverType: 'fastify'
+  serverType: EHTTPFrameworks.fastify
 });
 const server = API.server.application;
 

@@ -19,23 +19,22 @@ const addAccount: EndPointFactory = (
     path: '/accounts',
     method: 'post',
     securitySchemes: basicAuth,
-    handler(req: FastifyRequest, res: FastifyReply) {
-      (async () => {
-        try {
-          const body = req.body as Record<string, any>;
-          isUserAccessGranted(((req as any).profile ?? {}), endPointConfig);
-          validateRequestBody(spec, endPointConfig, body);
-          const service = AccountService.compile({
-            repos: {
-              AccountDataRepository: AccountDataRepository.compile({ dbClient })
-            }
-          });
-          const document = await service.create(body);
-          res.code(201).send({ ...document });
-        } catch (error: unknown) {
-          sendErrorResponse(error as Error, res);
-        }
-      })();
+    async handler(req: FastifyRequest, res: FastifyReply) {
+      try {
+        const body = req.body as Record<string, any>;
+        isUserAccessGranted(((req as any).profile ?? {}), endPointConfig);
+        validateRequestBody(spec, endPointConfig, body);
+        const service = AccountService.compile({
+          repos: {
+            AccountDataRepository: AccountDataRepository.compile({ dbClient })
+          }
+        });
+        const document = await service.create(body);
+        res.code(201);
+        return { ...document };
+      } catch (error: unknown) {
+        return sendErrorResponse(error as Error, res);
+      }
     }
   };
 };

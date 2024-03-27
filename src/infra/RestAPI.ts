@@ -179,6 +179,7 @@ export class RestAPI<T> {
       }));
     }
     await Promise.all(requests);
+    // console.log('>>>> done');
   }
 
   public async seedTransactions() {

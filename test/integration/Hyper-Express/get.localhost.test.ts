@@ -1,5 +1,4 @@
 /* global  describe, it, expect */
-import request from 'supertest';
 import HyperExpress from 'hyper-express';
 import { HyperExpressServer } from '@src/infra/server/HTTP/adapters/hyper-express/HyperExpressServer';
 import { RestAPI } from '@src/infra/RestAPI';
@@ -7,6 +6,7 @@ import { InMemoryDbClient } from '@src/infra/persistence/InMemoryDatabase/InMemo
 import { infraHandlers } from '@src/infra/server/HTTP/adapters/hyper-express/handlers/infraHandlers';
 import { requestHeaderEmployee1 } from '@test/mock';
 import { EHTTPFrameworks } from '@src/infra/server/HTTP/ports/EHTTPFrameworks';
+import { mutexService } from '@src/infra/mutex/adapter/MutexService';
 
 describe('hyper-express -> /localhost suite', () => {
   let webServer: HyperExpressServer;
@@ -16,11 +16,13 @@ describe('hyper-express -> /localhost suite', () => {
     API = new RestAPI<HyperExpress.Server>({
       dbClient: InMemoryDbClient,
       webServer,
+      mutexService,
       infraHandlers,
       serverType: EHTTPFrameworks.hyper_express
     });
 
     await API.start();
+    await API.seedAccounts();
   });
   afterAll(async () => {
     await API.stop();
@@ -28,21 +30,22 @@ describe('hyper-express -> /localhost suite', () => {
 
   it('localhost should return 200', async () => {
     expect.hasAssertions();
-
-    const response = await fetch('http://localhost:3000/', {
+    const response = await fetch('http://0.0.0.0:3000/', {
       method: 'GET',
       headers: {
         ...requestHeaderEmployee1
-      },
-      mode: 'cors',
-      cache: 'default'
+      }
     });
     const body = await response.json();
-    console.log(body);
-    // const response = await request(API.server.application)
-    //  .get('/')
-    //  .set('Accept', 'application/json')
-    //  .set(requestHeaderEmployee1);
     expect(response.status).toBe(200);
+    expect(body.status).toBe('ok');
   });
 });
+
+// loadtest -n 1000 http://localhost:3000
+
+// loadtest -n 1000000 -c 100 http://localhost:3000/api/1.0.0/accounts -H 'Authorization:Basic ZW1wbG95ZWUxOmVtcGxveWVlMV9wYXNzd29yZA=='
+
+// loadtest -n 20000 http://localhost:3000/api/1.0.0/accounts -H 'Authorization:Basic ZW1wbG95ZWUxOmVtcGxveWVlMV9wYXNzd29yZA=='
+
+// loadtest -c 10 --rps 400 http://localhost:3000/api/1.0.0/accounts -H 'Authorization:Basic ZW1wbG95ZWUxOmVtcGxveWVlMV9wYXNzd29yZA=='

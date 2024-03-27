@@ -6,13 +6,14 @@ import { RestAPI } from '@src/infra/RestAPI';
 import { InMemoryDbClient } from '@src/infra/persistence/InMemoryDatabase/InMemoryDbClient';
 import { infraHandlers } from '@src/infra/server/HTTP/adapters/fastify/handlers/infraHandlers';
 import { requestHeaderEmployee1 } from '@test/mock';
+import { EHTTPFrameworks } from '@src/infra/server/HTTP/ports/EHTTPFrameworks';
 
 const webServer = new FastifyServer();
 const API = new RestAPI<Fastify>({
   dbClient: InMemoryDbClient,
   webServer,
   infraHandlers,
-  serverType: 'fastify'
+  serverType: EHTTPFrameworks.fastify
 });
 // eslint-disable-next-line prefer-destructuring
 const application = API.server.application;

@@ -19,4 +19,5 @@ const API = new RestAPI<Fastify>({
 // eslint-disable-next-line jest/require-hook
 (async () => {
   await API.start();
+  await API.seedAccounts();
 })();

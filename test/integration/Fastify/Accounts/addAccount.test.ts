@@ -14,13 +14,14 @@ import {
   account2,
   account3
 } from '@test/mock';
+import { EHTTPFrameworks } from '@src/infra/server/HTTP/ports/EHTTPFrameworks';
 
 const webServer = new FastifyServer();
 const API = new RestAPI<Fastify>({
   dbClient: InMemoryDbClient,
   webServer,
   infraHandlers,
-  serverType: 'fastify'
+  serverType: EHTTPFrameworks.fastify
 });
 const server = API.server.application;
 
