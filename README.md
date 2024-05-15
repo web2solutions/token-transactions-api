@@ -8,8 +8,6 @@ It implements concurrency control through a mutex implementation to achieve data
 
 ## Motivation
 
-This project was created as an answer to a `home task coding challenge` managed by [Ledn](https://ledn.io/). Please see the original requirements at [README-BACKEND](./README-BACKEND.md)
-
 Rather than delivering some some pieces of code, the idea is to delivery something as closer as possible to a `software product`, something really useful. Following the industries best practices when it comes to software development, product/project quality/management and success, easy maintenance, smaller footprint, easier delivery, security, adaptability and friction less ability to scale.
 
 It follows an 100% agnostic approach totally focused on `architecture principles` rather than `vendor based` solutions.
